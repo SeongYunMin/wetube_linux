@@ -19,7 +19,7 @@ express function을 사용하면 express application을 생성해준다
 검색창에 google.com을 치고 엔터 누르면 이게 request가 되는 것이다
 서버는 계속 주목하고 있다 따라서 우리는 서버로 하여금 사람들이 뭔가를 request할 때까지
 기다리게 해야한다 app.listen(port, callback) 이 이 역할을 수행한다
-listen 함수는 콜백함수를 필요로 한다 즉 서버가 시작할때 작동하는 함수이다
+listen 함수는 콜백함수를 필요로 한다 (서버가 시작할때 작동하는 함수이다)
 콜백을 하기 전에 서버에게 어떤 port를 listen 할 것인지 알려줘야 한다
 port는 컴퓨터의 문 같은 것인데 컴터에 여러개 있다 어떤 port는 인터넷과 연결돼있다
 port 뭐써야 할지 모르겠으면 그냥 높은 번호의 port를 써라 보통 높은 번호 port는 항상
@@ -48,8 +48,8 @@ get /은 말그대로 첫 페이지를 가져오라는 뜻이다 우리가 local
 이 문구가 떴다는 것은 someone이 첫페이지, 즉 홈페이지를 get하려 하고 있다는 뜻이다
 시도는 해보고 있는 거다. 우리는 이 request에 답을 해줘야 한다
 
-{3_2_ㅁGETRequestTwo}
-인제 할 일들은 전부 express application을 만들고 난 후에 발생해야 하므로
+{3_2_GETRequestTwo}
+인제 할 일들은 전부 express 서버를 만들고 난 후에 발생해야 하므로
 const app = express(); 이후에 그리고 app.listen() 전에 코드를 짜야 한다
 이 샌드위치 영역에 우리는 application 설정을 할 것이다
 이렇게 해야 순서가 맞다.
@@ -58,3 +58,36 @@ const app = express(); 이후에 그리고 app.listen() 전에 코드를 짜야 
 이 순서로 진행되는게 자명하다
 request는 유저가 뭔가를 요청하거나, 보내거나, 너에게 무슨 행동을 하는 것을 의미한다
 지금 상황은 브라우저가 서버에 get request를 한 상황이다 인제 그거에 대한 response를 해줘야 한다
+아직 브라우저 창에 데이터를 get하는 걸 하진 않을 것이다
+우린 일단 request 생기면 콘솔창에 텍스트가 출력되게 하는거 먼저 해볼 것이다
+우선 app.get(route, callback) 함수에 대해 알아보자
+app.get 함수는 어떤 route에 request가 발생하면 callback함수가 실행되게끔 하는 함수이다
+우리는 지금 root페이지일때 반응을 원하므로 route는 "/"가 될 것이다
+이렇게 코드 짠 후 실행해보면 root 페이지 들어갈 때마다 콘솔에 respone가 출력됨을 알 수 있다
+그리고 root 페이지는 계속 로딩 중이고 cannot get / 는 더 이상 뜨지 않는다
+브라우저가 계속 로딩중인 이유는 우리가 응답을 안 해줘서 기다리고 있는 것이다
+물론 request 받고 console.log 했지만 그 외에는 아무것도 않했잔냐 response가 필요하다
+
+{3_3_Responses}
+인제 responses에 대해 배워보자  route를 다룰때는 바닐라 JS 할때 배웠던 addEventlistner
+함수의 콜백함수가 event 인자를 가졌다는 가지는 것과 비슷한 맥락으로 공부를 하면 된다
+route handler(여기선 handleHome)는 event 인자를 가지진 않지만 두개의 매우 섹시한 오브젝트를 
+인자로 가진다 첫쨰는 request(req) 이고 두번째는 response(res) 오브젝트이다
+이 두 인자는 express가 우리에게 무료로 제공하는 인자들이다. 즉, 만약 home(/)으로 get request
+가 오면 express는 handleHome에다가 request 와 response 두 오브젝트를 인자로 넣어준다
+자 그럼 인제 home에 get request 왔을때 콘솔창에 req 오브젝트를 출력해보자.
+엄청 복잡하고 긴 오브젝트가 출력된다 브라우저가 서버에 request하는 정보가 담겨있다
+우리가 배워볼 첫번째 함수는 res.end이다 이거는 response 기능 중에 하나로 request를 종료하는
+함수이다 return res.end() 실행해보면 localhost 들어가자마자 로딩 끝나는 것을 볼 수 있다
+res.send()는 브라우저 창에 괄호 안의 내용을 띄우는 함수이다
+route를 하나 더 만들어보자 /login 페이지를 만들어서 res.send 써서 창에 login here를 
+띄우도록 했다
+express의 다양한 method와 properties를 보려면 https://expressjs.com/ 여기 가서
+api reference 들어가 보라 설명이 잘 나와있다
+res.send() 메서드는 텍스트 뿐만 아니라 html도 보낼 수 있고 json도 보낼 수 있다
+reference를 보면 알겠지만 express는 매우 작은 패키지이므로 겁먹지 말자!
+express는 4개의 오브젝트만으로 구성돼있는데 각각 app, req, res, router 이다
+router는 handler로 URL들을 정돈하는 방법인데 나중에 배울 것이다
+정리하자면 서버는 우리가 server.js에 만든 것을 의미한다 우리는 브라우저로부터
+request를 받게 되고 그에 따른 response를 해줘야 한다 안 그럴 경우 브라우저는 response
+받을때까지 로딩하다가 포기할 것이다
