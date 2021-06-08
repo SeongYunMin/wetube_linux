@@ -78,5 +78,26 @@ babel이 dependencies에 저장돼있다면 이걸 그냥 devDependencies로 옮
 그 안에 바벨 홈페이지에 쓰여있는 preset 코드를 복붙해서 넣으면 끝!
 babel.config.json 파일은 그 안에 preset 항목 들어있는데 이거는 최신 자바스크립트에 
 쓸 수 있는 플러그인임을 의미한다 너무 깊게 팔 필요 없다!
-후 커맨드 창으로 깃허브를 조작하는 법을 배울려면 https://velog.io/@dysim361/%EC%9A%B0%EB%B6%84%ED%88%ACubunto-GitHub-%EC%97%B0%EB%8F%99-%EB%B0%8F-%EC%97%85%EB%A1%9C%EB%93%9C
-여기 들어가보자
+(후 커맨드 창으로 깃허브를 조작하는 법을 배울려면 https://velog.io/@dysim361/%EC%9A%B0%EB%B6%84%ED%88%ACubunto-GitHub-%EC%97%B0%EB%8F%99-%EB%B0%8F-%EC%97%85%EB%A1%9C%EB%93%9C
+여기 들어가보자)
+후 그리고 이 babel을 쓰는 법은 usage 항목을 보면 알 수 있는데 JS 코드 앞에다가
+require("@babel/core").transform("code", {
+  presets: ["@babel/preset-env"],
+});
+이 코드를 치고 코딩을 하면 된다 근데 우리는 이렇게 하지 않을 것이다 대신 package.json
+의 script에 이 명령을 줄 것이다 어떻게? nodemon이란걸 사용해서 해볼 것이다
+우선 babel/node를 dev로 설치하자 설치하고 script의 "win" 을 지우고 거기에 "dev"를 써서
+babel-node를 쓰고 싶다고 알려줄 것이다
+"dev": "babel-node index.js" 이렇게 입력할 것인데 이는 index.js에서 우리는 nodeJS 사용할
+때 babel도 같이 적용시킬 것이라는 뜻이다 이렇게 하면 index.js에 부가적인 것을 입력할
+필요가 없다
+이렇게 한 후 커맨드창에 npm run dev 입력하면 우리의 최신 JS 문법으로 작성한 index.js를
+컴파일 할 수 있게 된다 섹시한 문법으로 express가져와 보자
+근데 이렇게 하면 코드를 수정하고 다시 실행하기 위해선 항상 npm run dev를 쳐줘야 한다
+
+이건 좀 귀찮은 일이다 이때 필요한게 nodemon이다
+nodemon은 우리가 만든 파일이 수정되는걸 감시해주는 패키지이다
+만약 파일이 수정된다면 nodemon에서 알아서 재시작을 해주게 된다
+npm i nodemon --save-dev 로 다운 받을 수 있다
+다운 받은 후 scripts의 dev 항목으로 가서 기존의 것을 "nodemon --exec babel-node index.js" 
+로 바꿔준다 이 --exec 옵션 뒤에 babel-node index.js 을 써서 실행하게 만들 수 있다

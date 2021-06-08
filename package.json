@@ -7,7 +7,7 @@
     "url": "git+https://github.com/SeongYunMin/wetube-reloaded.git"
   },
   "scripts": {
-    "win": "node index.js"
+    "dev": "nodemon --exec babel-node src/server.js"
   },
   "author": "SeongYunMin",
   "license": "ISC",
@@ -20,6 +20,8 @@
   },
   "devDependencies": {
     "@babel/core": "^7.14.3",
-    "@babel/preset-env": "^7.14.4"
+    "@babel/node": "^7.14.2",
+    "@babel/preset-env": "^7.14.4",
+    "nodemon": "^2.0.7"
   }
 }

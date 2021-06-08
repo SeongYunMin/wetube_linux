@@ -1,0 +1,35 @@
+{3_0}
+후 인제 진짜 서버를 만들 시간이다 그 전에 폴더를 정리하기 위해 코드를 담고 있는
+파일들은 모두 src 폴더에 넣어줄 것이다 이때 index.js도 src에 넣을 것인데 그러면
+package.json의 script를 손봐야 한다(경로를 수정해줘야 하기 때문)
+index.js를 src/index.js 로 바꿔주면 된다
+후 그리고 js 파일의 이름이 꼭 index.js일 필요 없다 나는 server.js로 바꿀 것이다
+
+인제 우리의 첫번쨰 express application을 만들어보자
+우선 "express" 라는 패키지로부터(from) express를 import해줄 것이다
+최신 nodeJS는 매우 똑똑해서 import express from "express"; 이렇게만
+입력해줘도 알아서 node_modules 폴더에서 express 패키지를 찾아낸다
+node_modules/express 이렇게 할 필요 없다
+express를 사용하려면 먼저 express application을 만들어야 한다
+app이라는 변수를 선언하고 express application을 만들어보자
+const app = express();
+express function을 사용하면 express application을 생성해준다
+서버는 항상 켜져있는 가상의 컴퓨터이다 인터넷에 연결돼있는 컴퓨터이다
+이 서버는 항상 request를 listening 하고 있다
+검색창에 google.com을 치고 엔터 누르면 이게 request가 되는 것이다
+서버는 계속 주목하고 있다 따라서 우리는 서버로 하여금 사람들이 뭔가를 request할 때까지
+기다리게 해야한다 app.listen(port, callback) 이 이 역할을 수행한다
+listen 함수는 콜백함수를 필요로 한다 즉 서버가 시작할때 작동하는 함수이다
+콜백을 하기 전에 서버에게 어떤 port를 listen 할 것인지 알려줘야 한다
+port는 컴퓨터의 문 같은 것인데 컴터에 여러개 있다 어떤 port는 인터넷과 연결돼있다
+port 뭐써야 할지 모르겠으면 그냥 높은 번호의 port를 써라 보통 높은 번호 port는 항상
+열려있다 4000 써보자
+그리고 callback 함수로는 handleListening 써서 글 출력하도록 했다
+이렇게 간단하게 서버를 만들 수 있다
+이 서버는 port(항구로 생각하자) 4000을 listening 중이다
+이 서버는 어디서 열어볼 수 있을까? 크롬창에 localhost:4000 을 입력해보자
+error가 뜨지만 그래도 cannot get이 출력된 것을 알 수 있다
+이 서버창은 npm run dev가 실행중일때, 즉 서버가 온라인일때 뜨게 된다
+컨트롤 c 눌러서 nodemon 끈 상태에서 localhost 접속해보면 접속이 안됨을 알 수 있다
+이때 서버는 오프라인 상태인 것이다
+이렇게 npm run dev를 써서 서버를 껐다 킬 수 있다 인제 서버를 만들 수 있게 됐다
