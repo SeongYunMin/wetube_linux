@@ -24,7 +24,7 @@ listen 함수는 콜백함수를 필요로 한다 즉 서버가 시작할때 작
 port는 컴퓨터의 문 같은 것인데 컴터에 여러개 있다 어떤 port는 인터넷과 연결돼있다
 port 뭐써야 할지 모르겠으면 그냥 높은 번호의 port를 써라 보통 높은 번호 port는 항상
 열려있다 4000 써보자
-그리고 callback 함수로는 handleListening 써서 글 출력하도록 했다
+그리고 callback 함수로는 handleListening 써서 콘솔창에는 글을 출력하도록 했다
 이렇게 간단하게 서버를 만들 수 있다
 이 서버는 port(항구로 생각하자) 4000을 listening 중이다
 이 서버는 어디서 열어볼 수 있을까? 크롬창에 localhost:4000 을 입력해보자
@@ -33,3 +33,28 @@ error가 뜨지만 그래도 cannot get이 출력된 것을 알 수 있다
 컨트롤 c 눌러서 nodemon 끈 상태에서 localhost 접속해보면 접속이 안됨을 알 수 있다
 이때 서버는 오프라인 상태인 것이다
 이렇게 npm run dev를 써서 서버를 껐다 킬 수 있다 인제 서버를 만들 수 있게 됐다
+
+{3_1_GETRequest}
+흠 서버창에 뜬 Cannot get / 의 의미는 뭘까?
+일단 / 는 서버의 root 혹은 첫페이지를 의미한다
+따라서 url창에 google.com을 입력하는 것이나 google.com/ 를 입력하는 것은 같은거다
+get은 http method 이다 http는 뭘까? 얘는 우리가 서버와 소통하는 방법을 의미한다
+서버가 서로 소통하는 방법이기도 하다 우리가 주소창에 주소 치고 엔터를 누르면 우리는
+http request를 서버에 보내는 것이다. 엄밀히는 브라우저가 서버에 보내게 된다
+get /은 말그대로 첫 페이지를 가져오라는 뜻이다 우리가 localhost 4000에 접속했을때 이 명령이
+자동으로 실행되는 것이다 이거는 "웹사이트에게 너희 사이트좀 나(브라우저)에게 가져와 줘" 라고 쉽게
+생각하면 된다 브라우저는 나를 대신해서 웹사이트를 requst하고 가져오는 역할을 담당한다
+후 cannot get / 은 일단 이런뜻이다
+이 문구가 떴다는 것은 someone이 첫페이지, 즉 홈페이지를 get하려 하고 있다는 뜻이다
+시도는 해보고 있는 거다. 우리는 이 request에 답을 해줘야 한다
+
+{3_2_ㅁGETRequestTwo}
+인제 할 일들은 전부 express application을 만들고 난 후에 발생해야 하므로
+const app = express(); 이후에 그리고 app.listen() 전에 코드를 짜야 한다
+이 샌드위치 영역에 우리는 application 설정을 할 것이다
+이렇게 해야 순서가 맞다.
+1. 서버를 개설한다(express app 생성) -> 2.app에게 get request에 응답하는 법을 가르칠것이다(response)
+-> 3. 준비가 완료되면 application은 listen하기 시작하고 외부에 개방된다
+이 순서로 진행되는게 자명하다
+request는 유저가 뭔가를 요청하거나, 보내거나, 너에게 무슨 행동을 하는 것을 의미한다
+지금 상황은 브라우저가 서버에 get request를 한 상황이다 인제 그거에 대한 response를 해줘야 한다
