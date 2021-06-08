@@ -1,0 +1,82 @@
+{2_1_InstallingExpress}
+인제 이 index.js 파일을 실행하는 법을 배울 것이다
+콘솔 창에 node index.js 입력해서 출력할 수도 있지만 우리는 node를 쓰지 않을것이다
+대신 code를 package.json으로 실행할 것이다
+package.json에 있는 main 항목은 우리가 제작해서 배포한 패키지를 다른 사람들이 설치하면
+main을 쓸 것인데 지금 우리의 package는 나뺴곤 아무도 안 쓸 것이므로 지워주자
+우리는 우선 package.json에 scripts 항목을 추가할 것이다 scripts는 우리가 실행시키고 싶은
+무언가가 들어가는 항목이다 이 scripts 안에 "win" 라는 항목을 만들었다 이 안에
+node index.js 를 입력하게 되면 npm이 아까 우리가 직접한 node index.js를 대신해주게 된다
+(명심할것! 항목 이름은 script가 아니라 scripts 이다!!)
+암튼 이렇게 script에 실행하고 싶은 명령어 넣고 콘솔 창에 npm run win 을 입력하면
+npm은 index.js를 실행시켜준다 
+이렇듯 우리는 정말 많은 script를 쓸 것이다 어떤 거는 css를 압축하고 어떤건 서버를 불러오고
+이런 일들을 할 것이다
+인제 서버를 만들어보자 서버를 만들기 위해서는 express를 쓰면 된다
+npm install express를 입력해 다운 받는다 (입력시 npm i express 이렇게 입력해도 상관없다)
+npm 이 가지고 있는 package에 한해서 이렇게 다운받을 수 있다 npm 사이트 들어가면
+npm이 가지고 있는 여러 유용한 패키지들을 열람할 수 있다 그리고 explorer refresh 하면
+package-lock.json과 node_modules 폴더 생성됨을 알 수 있다
+express 설치할때 콘솔창 잘 읽어보면 37명의 기여자가 만든 50개의 패키지가 추가됐다고 뜨는데
+이 npm으로 다운받은 50가지 패키지가 node-modules 에 저장된다 그 안에 express도 있다
+express는 혼자 작동하지 않는다 다른 패키지들도 필요하다 그래서 이렇게 많은 패키지들이 같이
+다운받아진 것!! node-modules/express 에 들어가보면 얘도 package.json 파일 있는데
+이 안에 "script", "contributors", "dependencies" 등의 항목이 있다
+이 안의 항목 중 dependencies가 바로 express가 작동되려면 필요한 패키지들을 의미한다
+즉, 요약해보자면 npm i express를 콘솔창에 치면 express 패키지와 이 패키지가 작동되는데
+필요한 부가적인 패키지들이 다 같이 다운받아지는 것이다 이 보조 패키지들의 package.json 살펴보면
+또 필요한 dependencies 존재하고.. 이렇게 체인처럼 연결돼있다 근데 어떤 패키지는
+devDependencies 가 있는 경우가 있는데 얘는 node-modules 폴더에 있지 않는 애들이다
+이거에 관해서는 다음에 설명한다 
+인제 이 express 다 다운 받았으면 처음에 우리가 만든 package.json 들어가보자!
+따라~ 우리 파일에도 dependencies 항목이 생겼고 그 안에 express 생겼음을 알 수 있다
+인제 다음 강의를 위해 package-lock.json과 node_modules 폴더는 지우겠다
+인제 우리 프로젝트를 사용하려면 express가 있어야한다는 것을 dependencies 항목을 통해 알 수 있다
+
+{2_2_UnderstandingDependencies}
+이전 강의에서 package-lock.json과 node_modules 폴더를 지운 것을 기억할 것이다 근데 우리
+프로그램 돌릴려면 express 필요한데 그럼 다시 npm i express 입력해야될까? 아니다 그럴필요 없다
+그저 npm install 만 입력해주면 된다 그럼 express 다운받아진다 어떻게 이게 가능할까?
+npm은 상당히 똑똑해서 npm install 명령어만 입력해주면 알아서 package.json안의 dependencies항목
+을 들춰본후 알아서 필요한 패키지(여기선 express) 를 다 다운받는다
+이 기능은 여러사람들이 프로젝트 제작에 가담할때 진가를 발휘한다 팀원들과 프로젝트를 공유하고자 할때
+패키지 폴더를 다 보내줄 필요 없이 package.json과 index.js 파일 보내주면 된다 
+이렇듯 nodejs에서 package.json은 정말 중요하다 이 안에는 프로젝트를 동작시킬 때 필요한 모듈
+들이 어떤건지에 대한 정보가 담겨져 있다 아 그리고 package-lock.json은 우리의 패키지 파일들
+을 안전하게 관리해준다 업데이트로 인해 패키지 수정됐는지 같은거를 검사한다 이 파일을 팀원한테
+보내주게 되면 그 팀원이 npm i를 통해 패키지 다운 받을 때 나랑 같은 버전의 패키지를 다운
+받을 수 있게 된다 따라서 코드 공유할 때는 package-lock.json , package.json, index.js 보내주면
+완벽하다
+아 그리고 npm install을 할때는 무조건 package.json을 닫은 상태에서 실행해야 한다
+만약 package.json이 열려있고 저장 안된 상태에서 npm i 실행되면 버전 충돌로 에러가 발생하기 때문
+
+그리고 깃허브에 커밋할때 용량 큰 node_module 폴더는 제외하고 커밋할 것이므로 .gitignore파일을
+만들어준다
+express를 실행하고 싶다면 index.js에서 const express = require("express"); const app = express();
+이렇게 코드를 입력하면 된다 근데 이 코드 설명은 추후에 하고 babel에 대해 먼저 알아보겠다
+
+{2_3_TheTowerofBabel}
+babel은 기본적으로 자바스크립트 컴파일러이다 그냥 index.js에 코드 작성해도 nodeJS는 이해할
+것이다 하지만아직 nodeJS가 이해하지 못하는 최신 JS 코드들도 있다 이럴때 바벨이 필요하다
+babel은 우리가 작성한 매우 최신의 섹시한 코드를 nodeJS가 이해할 수 있게 컴파일해준다 따라서
+바벨을 쓰면 최신 JS 언어를 마음껏 써도 된다
+바벨 홈페이지에서 다운받는 방법을 보면 npm install --save-dev @babel/core 을 입력하라고 하는데
+--save-dev는 무슨 뜻일까? (dev는 developer의 약자이다)
+설치후 package.json 들어가보면 devDependencies 항목이 생긴 것을 볼 수 있다
+사실 devDependencies 안에 있는 @babel/core 를 그냥 dependencies에 넣어도 상관없다 node_modules
+폴더에 babel도 다운 받아져 있는 것을 볼 수 있다
+근데 왜 구분을 할까?
+이 dependencies 와 devDependencies 의 구분은 우리같은 개발자를 위한 것이다
+그냥 dependencies는 우리 프로젝트가 돌아가는데 필요한 패키지를 담고 있다
+devDependencies는 개발자를 위한 dependencies이다 개발자가 개발을 더 편하게 할 수 있게끔
+하는 패키지들이 이곳에 들어간다
+아까 babel 다운 받았을때 썼던 --sace-dev는 이 babel이라는 패키지를 devDependencies에
+저장하세요 라는 의미를 가진다 이거 안 쓰면 얘도 그냥 dependencies에 저장된다
+만약 이거 실수해도 걱정하지 마라 package.json은 그저 텍스트파일임으로 만약
+babel이 dependencies에 저장돼있다면 이걸 그냥 devDependencies로 옮겨주면 된다
+자 이렇게 바벨을 설치했고 그다음은 babel.config.json 파일을 만드는 것이다
+그 안에 바벨 홈페이지에 쓰여있는 preset 코드를 복붙해서 넣으면 끝!
+babel.config.json 파일은 그 안에 preset 항목 들어있는데 이거는 최신 자바스크립트에 
+쓸 수 있는 플러그인임을 의미한다 너무 깊게 팔 필요 없다!
+후 커맨드 창으로 깃허브를 조작하는 법을 배울려면 https://velog.io/@dysim361/%EC%9A%B0%EB%B6%84%ED%88%ACubunto-GitHub-%EC%97%B0%EB%8F%99-%EB%B0%8F-%EC%97%85%EB%A1%9C%EB%93%9C
+여기 들어가보자
