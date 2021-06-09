@@ -1,0 +1,37 @@
+{3_5}
+웹사이트를 만들기 전에 middleware의 개념을 알아야 한다
+미들웨어는 말그대로 미들에 있는 소프트웨어를 의미한다 어디의 미들을 의미할까?
+바로 request와 response 사이에 미들웨어가 존재한다
+브라우저가 request한 다음, 그리고 나(서버)가 응답하기 전 그 사이에 있다
+한가지 알아야 되는게 모든 middleware는 handler 이고 모든 handler는 middleware가 될 수도 있다
+우리는 handler 대신에 controller를 쓸 것이다 handleHome 같은게 다 controller이다
+모든 컨트롤러는 req, res 뿐만 아니라 또하나의 인자를 가진다 바로 next이다
+next는 다음 함수를 호출하는 역할을 한다 이전에 배운 res.end()를 return하는 대신 next() 
+를 쓰면 어떻게 되는지 보자 localhost 열어보니 이런! cannot get / 이 떴다
+왜 그럴까? 그건 바로 app.get("/", handleHome);에서 handleHome 옆에 다른 함수가 존재하지
+않기 때문에 아얘 next 함수 실행 자체가 안 된것이다
+흠 일단 이건 차차 해결해보고 middleware 부터 만들어보자 gossipMiddleware 라는 함수 하나
+만들었다 그리고 얘는 콘솔창 텍스트 출력과 함께 next() 함수가 작동하게 짰다
+그리고 이 gossipMiddleware를 app.get("/", gossipMiddleware, handleHome); 이렇게
+handleHome 옆에 두니깐 인제 next()의 역할을 알 수 있게 됐다
+인제 user가 홈페이지에 request보내면 우선 gossipMiddleware 실행되고 next로 handleHome이
+실행된다 여기서 handleHome은 굳이 말하자면 finalware의 역할을 한다. 즉, 마지막으로
+호출되는 함수인 것이다 gossipMiddleware같은 미들웨어도 컨트롤러 역할을 할 수 있다
+컨트롤러랑 함수 형태 똑같다 예를 들어 gossipMiddleware 내에 return res.send("hi"); 를
+next() 전에 넣게 되면 여타 컨트롤러 처럼 브라우저에 hi를 표시할 것이다
+그치만 next 전에 return을 하게 되므로 next는 호출되지 않고 handleHome또한 호출되지 않는다
+즉 미들웨어가 미들웨어로서의 역할을 할려면 next() 함수가 그 안에 있어야 한다
+그렇기 때문에 모든 미들웨어는 컨트롤러이지만 그렇다고 모든 컨트롤러가 미들웨어인 것은 아닌 것이다
+정리하자면 middleware는 response를 하는 함수가 아니라 작업을 다음 함수에게 넘기는 함수인 것이다
+그렇다면 미들웨어에 user의 req.url 정보를 출력하는 코드를 추가해보자
+
+{3_6_Middleware part Two}
+후 인제 app오브젝트의 메서드를 하나 더 배워보자 바로 app.use이다 use는 global middleware
+를 만들 수 있게 해준다. 어느 url에서도 작동하는 범용적인 middleware 말이다
+app.use를 쓸때는 이걸 쓰는 위치가 중요하다 얘는 미들웨어를 만들므로 무조건 response를 담당하는
+finalware 전에 app.use(middleware); 가 와야 한다
+인제 브라우저 들어가보자 전이랑 똑같음을 알 수 있다. 그치만 인제는 범용적인 미들웨어를 쓰기때문에
+어떤 페이지를 들어가든 미들웨어가 작동한다. 예를들어 localhost: 4000/login 들어가도
+콘솔창에 middleware running 이 뜨는 것을 알 수 있다
+명심할것! app.use는 글로벌 미들웨어 실행하는 메서드로서 무조건 finalware 보다 전에
+와야지 정상적으로 미들웨어 작동한다!
