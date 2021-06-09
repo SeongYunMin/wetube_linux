@@ -26,6 +26,34 @@ next() 전에 넣게 되면 여타 컨트롤러 처럼 브라우저에 hi를 표
 그렇다면 미들웨어에 user의 req.url 정보를 출력하는 코드를 추가해보자
 
 {3_6_Middleware part Two}
+const logger = (req, res, next) => {
+  console.log("middleware running");
+  console.log(`${req.method} ${req.url}`);
+  // return res.send("Middleware Here!");
+  next();
+};
+
+const privateMiddleware = (req, res, next) => {
+  const url = req.url;
+  if (url === "/protected") {
+    console.log("Can't access");
+    return res.send("<h1>Not Allowed ❌</h1>");
+  }
+  console.log("Allowed, you may continue");
+  next();
+};
+
+const handleHome = (req, res) => {
+  return res.send("<h1>I love Middleware</h1>");
+};
+const handleProtected = (req, res) => {
+  return res.send("Welcome to the private lounge");
+};
+app.use(logger);
+app.use(privateMiddleware);
+app.get("/", handleHome);
+app.get("/protected", handleProtected);
+
 후 인제 app오브젝트의 메서드를 하나 더 배워보자 바로 app.use이다 use는 global middleware
 를 만들 수 있게 해준다. 어느 url에서도 작동하는 범용적인 middleware 말이다
 app.use를 쓸때는 이걸 쓰는 위치가 중요하다 얘는 미들웨어를 만들므로 무조건 response를 담당하는
@@ -35,3 +63,19 @@ finalware 전에 app.use(middleware); 가 와야 한다
 콘솔창에 middleware running 이 뜨는 것을 알 수 있다
 명심할것! app.use는 글로벌 미들웨어 실행하는 메서드로서 무조건 finalware 보다 전에
 와야지 정상적으로 미들웨어 작동한다!
+req.method를 쓰면 어떤 방식의 request가 왔는지 알 수 있다
+gossipMiddleware의 이름을 logger로 변경하겠다 그리고 prtectionMiddleware 을 하나 더 만들었다
+protectionMiddleware는 만약 user가 /protected에 접속했을때 not allowed를
+출력하는 미들웨어이다. 코드를 보고 해석해보자 만약(if) url이 /protected라면 res.send로 
+not allowed 창에 출력하고 아니면 next(); 를 써서 다음 미들웨어로 넘어가는 코드이다
+자 이렇게 코드 짜고 만약 app.get("/prtected",handleProtected); 메서드가 있다고 해보자
+url창에 /protected request하면 우선 protectionMiddleware 작동하고 url 검사를 조건문으로
+진행한다 조건문에 걸렸으므로 not allowed를 화면상에 출력한다. 이 상황에서 protectionMiddleware
+는 next() 가 실행되지 않고 response를 했으므로 컨트롤러가 된 것이다
+이 상황에선 logger는 미들웨어, protectionMiddleware 는 파이널웨어로 쓰인 것이다
+
+
+
+앞으로 매우 유명한 미들웨어들을 사용해볼 것이다 미들웨어는 중요하므로 숙지하고 있자!!
+미들웨어는 사용자가 로그인을 했는지, 안했는지를 확인할때 등에 사용된다
+인제 진짜 애플리케이션을 만들어볼 차례이다
