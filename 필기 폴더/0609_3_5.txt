@@ -4,7 +4,7 @@
 바로 request와 response 사이에 미들웨어가 존재한다
 브라우저가 request한 다음, 그리고 나(서버)가 응답하기 전 그 사이에 있다
 한가지 알아야 되는게 모든 middleware는 handler 이고 모든 handler는 middleware가 될 수도 있다
-우리는 handler 대신에 controller를 쓸 것이다 handleHome 같은게 다 controller이다
+우리는 handler를 앞으로 controller라고 할 것이다 handleHome 같은게 다 controller이다
 모든 컨트롤러는 req, res 뿐만 아니라 또하나의 인자를 가진다 바로 next이다
 next는 다음 함수를 호출하는 역할을 한다 이전에 배운 res.end()를 return하는 대신 next() 
 를 쓰면 어떻게 되는지 보자 localhost 열어보니 이런! cannot get / 이 떴다
@@ -26,10 +26,28 @@ next() 전에 넣게 되면 여타 컨트롤러 처럼 브라우저에 hi를 표
 그렇다면 미들웨어에 user의 req.url 정보를 출력하는 코드를 추가해보자
 
 {3_6_Middleware part Two}
+후 인제 app오브젝트의 메서드를 하나 더 배워보자 바로 app.use이다 use는 global middleware
+를 만들 수 있게 해준다. 어느 url에서도 작동하는 범용적인 middleware 말이다
+app.use를 쓸때는 이걸 쓰는 위치가 중요하다 얘는 미들웨어를 만들므로 무조건 response를 담당하는
+finalware 전에 app.use(middleware); 가 와야 한다
+인제 브라우저 들어가보자 전이랑 똑같음을 알 수 있다. 그치만 인제는 범용적인 미들웨어를 쓰기때문에
+어떤 페이지를 들어가든 미들웨어가 작동한다. 예를들어 localhost: 4000/login 들어가도
+콘솔창에 middleware running 이 뜨는 것을 알 수 있다
+명심할것! app.use는 글로벌 미들웨어 실행하는 메서드로서 무조건 finalware 보다 전에
+와야지 정상적으로 미들웨어 작동한다!
+req.method를 쓰면 어떤 방식의 request가 왔는지 알 수 있다
+gossipMiddleware의 이름을 logger로 변경하겠다 그리고 prtectionMiddleware 을 하나 더 만들었다
+protectionMiddleware는 만약 user가 /protected에 접속했을때 not allowed를
+출력하는 미들웨어이다. 코드를 보고 해석해보자 만약(if) url이 /protected라면 res.send로 
+not allowed 창에 출력하고 아니면 next(); 를 써서 다음 미들웨어로 넘어가는 코드이다
+자 이렇게 코드 짜고 만약 app.get("/prtected",handleProtected); 메서드가 있다고 해보자
+url창에 /protected request하면 우선 protectionMiddleware 작동하고 url 검사를 조건문으로
+진행한다 조건문에 걸렸으므로 not allowed를 화면상에 출력한다. 이 상황에서 protectionMiddleware
+는 next() 가 실행되지 않고 response를 했으므로 컨트롤러가 된 것이다
+이 상황에선 logger는 미들웨어, protectionMiddleware 는 파이널웨어로 쓰인 것이다
 const logger = (req, res, next) => {
   console.log("middleware running");
   console.log(`${req.method} ${req.url}`);
-  // return res.send("Middleware Here!");
   next();
 };
 
@@ -54,28 +72,105 @@ app.use(privateMiddleware);
 app.get("/", handleHome);
 app.get("/protected", handleProtected);
 
-후 인제 app오브젝트의 메서드를 하나 더 배워보자 바로 app.use이다 use는 global middleware
-를 만들 수 있게 해준다. 어느 url에서도 작동하는 범용적인 middleware 말이다
-app.use를 쓸때는 이걸 쓰는 위치가 중요하다 얘는 미들웨어를 만들므로 무조건 response를 담당하는
-finalware 전에 app.use(middleware); 가 와야 한다
-인제 브라우저 들어가보자 전이랑 똑같음을 알 수 있다. 그치만 인제는 범용적인 미들웨어를 쓰기때문에
-어떤 페이지를 들어가든 미들웨어가 작동한다. 예를들어 localhost: 4000/login 들어가도
-콘솔창에 middleware running 이 뜨는 것을 알 수 있다
-명심할것! app.use는 글로벌 미들웨어 실행하는 메서드로서 무조건 finalware 보다 전에
-와야지 정상적으로 미들웨어 작동한다!
-req.method를 쓰면 어떤 방식의 request가 왔는지 알 수 있다
-gossipMiddleware의 이름을 logger로 변경하겠다 그리고 prtectionMiddleware 을 하나 더 만들었다
-protectionMiddleware는 만약 user가 /protected에 접속했을때 not allowed를
-출력하는 미들웨어이다. 코드를 보고 해석해보자 만약(if) url이 /protected라면 res.send로 
-not allowed 창에 출력하고 아니면 next(); 를 써서 다음 미들웨어로 넘어가는 코드이다
-자 이렇게 코드 짜고 만약 app.get("/prtected",handleProtected); 메서드가 있다고 해보자
-url창에 /protected request하면 우선 protectionMiddleware 작동하고 url 검사를 조건문으로
-진행한다 조건문에 걸렸으므로 not allowed를 화면상에 출력한다. 이 상황에서 protectionMiddleware
-는 next() 가 실행되지 않고 response를 했으므로 컨트롤러가 된 것이다
-이 상황에선 logger는 미들웨어, protectionMiddleware 는 파이널웨어로 쓰인 것이다
 
-
-
+{3_11_ExternalMiddlewares}
 앞으로 매우 유명한 미들웨어들을 사용해볼 것이다 미들웨어는 중요하므로 숙지하고 있자!!
 미들웨어는 사용자가 로그인을 했는지, 안했는지를 확인할때 등에 사용된다
-인제 진짜 애플리케이션을 만들어볼 차례이다
+자주 쓰는 미들웨어에는 morgan이 있다
+npm에서 morgan을 검색해보면 얘는 nodeJS용 request logger middleware 이라고 설명돼있다
+npm i morgan 으로 설치해주자 이런 외부에서 설치해서쓰는 미들웨어를 external middleware라고 한다
+npm 사이트의 매뉴얼대로 morgan을 쓰면 되는데 일단 morgan 함수를 설정해줘야 한다
+express import 했던것처럼 morgan 도 import 하자
+import 할때는 굳이 함수이름을 패키지와 똑같이 할 필요 없다 우리는 편이상 morgan라는 이름을 
+쓸 것이다 morgan() 함수는 morgan을 설정하는 함수이다 함수값으론 dev등이 들어간다
+logger라는 변수에 이 설정값을 저장해주자
+그리고 다른 글로벌 미들웨어처럼 app.use(logger); 형태로 코드 작성해주면 된다
+이 morgan은 기존에 우리가 직접 만들어줬던 logger 미들웨어보다 좀 더 정교하다
+브라우저 새로고침해보면 콘솔창에 GET, path, status code(여기선 304), 지연시간 등이
+표시됨을 알 수 있다 morgan의 설정으로는 dev, combined, tiny 등이 있다 각각 다른
+정보를 콘솔창에 표시해줄 것이다 아 morgan은 미들웨어임으로 당연히 마지막에 next()를 포함하고 있다
+패키지 안의 index.js에 들어있다
+
+import express from "express";
+import morgan from "morgan";
+const logger = morgan("dev");
+const PORT = 4000;
+
+const app = express();
+
+const handleHome = (req, res) => {
+  return res.send("<h1>I love Middleware</h1>");
+};
+
+app.use(logger);
+app.get("/", handleHome);
+
+const handleListening = () =>
+  console.log(`Server listening on port http://localhost:${PORT} 🎃`);
+
+app.listen(PORT, handleListening);
+
+{4_0_WhatAreRouters}
+Router이 뭘까? router는 우리의 컨트롤러와 URL 관리를 쉽게 해주는 오브젝트이다
+이 일만을 위한 미니 애플리캐이션인 것이다 이건 모두 개발자를 위한 것이다
+라우터를 이해하는 가장 좋은 방법은 직접 만들어보고 프로젝트에 이를 적용해보는 것이다
+우리가 위튜브에서 쓸 데이터는 뭐가 있을까
+크게 2가지가 있다
+첫쨰는 비디오이다. 비디오를 업로드할 수 있고 시청할 수 있으며 지울 수도 있다
+이걸 하는 사람이 누구인가? 바로 유저이다
+즉, 두번쨰는 유저이다 유저는 계정을 만들 수 있고 비밀버호 재설정을 할 수 있으며
+댓글도 달 수 있다
+이 두가지, 비디오와 유저가 우리 프로젝트의 domain 인것이다
+이제 이 도메인을 URL 차원에서 생각해볼 것이다
+README 파일에 우리가 만들 프로젝트에 대한 구상을 해보겠다 여기다가도 해보겠다
+/ -> home
+/join -> Join
+/login -> Login
+/search -> Search
+
+
+/edit-user -> Edit User
+/delete-user -> Delete User
+/watch-videos -> Watch Video
+/edit-videos -> Edit Video
+/delete-videos -> Delete Video
+후 이렇게 우리가 만들 페이지를 url로 정리해봤다 인제 라우터를 도메인 별로 나눌 것이다
+위처럼 /{어쩌구}-{저쩌구} 로 페이지를 만드는거 대신에 /{어쩌구}/{저쩌구} 이런식으로 만들 수 있다
+/edit-user == /users/edit
+/delete-user == /users/delete
+/watch-video == /videos/watch
+/edit-video == /videos/edit
+               /videos/comments
+               /videos/comments/delete
+이렇게 바꾸니까 뭔가 보이지 않는가? url에 구분이 있다는것을 알 수 있다
+즉, 라우터는 너희가 작업중인 주제를 기반으로 URL을 그룹화해준다 노마드코더 사이트의 url
+도 이런식으로 돼있는걸 볼 수 있다 이렇게 하는게 훠얼씬 깔끔하고 url 정리하기 좋다
+위에서 만든 / , /login , /join 등은 홈페이지에서 바로 갈 수 있는 페이지들을
+담고 있는 global router가 된다 
+우리가 만들 라우터들을README 파일에 정리해두겠다
+
+{4_1_MakingOurRouters}
+근데 생각해보면 로그인을 한다 쳤을때 로그인은 유저가 하지 않는가? 그리고 회원가입도 유저가
+한다. 그렇다면 /join, /login 등이 아니라 /users/join, /users/login 로 써야 더 직관적이지 않을까?
+인제 이 규칙의 불규칙한 부분을 말해줄 떄가 됐다
+방금처럼 저렇게 뭔가 더 직관적으로 보일것 같은 url을 타인(user)에게 줬다고 해보자
+이게 직관적일까? mincoders.co/users/login 보다는 그냥 깔끔하게 mincoders.co/login 에 접속
+해보라고 하는게 상대방 입장에서도 직관적일 것이다 그래서 그냥 이렇게 글로벌 라우터를 만드는 것이다
+자, 라우터는 어떻게 만드는 걸까?
+일단 우리는 3개의 라우터가 있다 글로벌 라우터, users 라우터, videos 라우터.
+어케 만드냐면 그냥 sever.js에서 const globalRouter = express.Router(); 이렇게 하면 된다
+글로벌 라우터 완성! 나머지 두 라우터도 똑같이 해서 만들 수 있다
+이 라우터를 어케 쓸 수 있을까?
+먼저 각 라우터의 root url을 가져와야 한다(글로벌의 경우 /, 유저의 경우 /users, 비디오는 /videos)
+app.use("/users", userRouter) 이렇게 각각의 url을 라우터로 지정해줄 수 있다
+즉 /users를 라우터로서 사용할 수 있게 해줬다 app.use가
+자 인제 app은 준비됐다 인제 본격적으로 이 라우터들에 함수를 넣어줘야 한다
+우선 각각의 라우터의 첫번째 페이지들을 만들어보자 /의 경우 /, /users의 경우 /users/edit,
+/videos의 경우 /videos/watch 이다
+그리고 인제 각 url 리퀘스트 왔을때 반응할 수 있게 컨트롤러를 각 라우터마다 만드러준다
+const handleHome = (req, res) => res.send("Home"); 이렇게 말이다
+그리고 인제 get 메서드를 써서 request 받을 건데 이때 app.get이 아닌 router.get()을 써야된다
+그리고 url넣는 칸에는 라우터 뒷 주소만 넣어주면 된다 이렇게 라우터를 사용할 수 있게 된다
+브라우저 들어가서 각각의 라우터의 첫페이지를 주소창에 입력하면 텍스트 출력됨을 알 수 있다
+이렇게 라우터를 써야 코드 짤때 주소를 길게 나열하지 않아도 되는 것이다 이렇게 라우터를 쓰는법
+배웠다 근데 이코드는 조금 더럽다 다음장에서는 clean하게 이 코드를 작성하는 법 배울 것이다
