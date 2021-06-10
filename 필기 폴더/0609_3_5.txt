@@ -77,9 +77,9 @@ app.get("/protected", handleProtected);
 앞으로 매우 유명한 미들웨어들을 사용해볼 것이다 미들웨어는 중요하므로 숙지하고 있자!!
 미들웨어는 사용자가 로그인을 했는지, 안했는지를 확인할때 등에 사용된다
 자주 쓰는 미들웨어에는 morgan이 있다
-npm에서 morgan을 검색해보면 얘는 nodeJS용 request logger middleware 이라고 설명돼있다
+npm 사이트에서 morgan을 검색해보면 얘는 nodeJS용 request logger middleware 이라고 설명돼있다
 npm i morgan 으로 설치해주자 이런 외부에서 설치해서쓰는 미들웨어를 external middleware라고 한다
-npm 사이트의 매뉴얼대로 morgan을 쓰면 되는데 일단 morgan 함수를 설정해줘야 한다
+npm 사이트의 매뉴얼대로 morgan을 쓰면 되는데 일단 morgan 함수에 값을 넣어 설정해줘야 한다
 express import 했던것처럼 morgan 도 import 하자
 import 할때는 굳이 함수이름을 패키지와 똑같이 할 필요 없다 우리는 편이상 morgan라는 이름을 
 쓸 것이다 morgan() 함수는 morgan을 설정하는 함수이다 함수값으론 dev등이 들어간다
@@ -89,7 +89,7 @@ logger라는 변수에 이 설정값을 저장해주자
 브라우저 새로고침해보면 콘솔창에 GET, path, status code(여기선 304), 지연시간 등이
 표시됨을 알 수 있다 morgan의 설정으로는 dev, combined, tiny 등이 있다 각각 다른
 정보를 콘솔창에 표시해줄 것이다 아 morgan은 미들웨어임으로 당연히 마지막에 next()를 포함하고 있다
-패키지 안의 index.js에 들어있다
+패키지 안의 index.js에 next() 들어있다
 
 import express from "express";
 import morgan from "morgan";
@@ -157,7 +157,7 @@ README 파일에 우리가 만들 프로젝트에 대한 구상을 해보겠다 
 이게 직관적일까? mincoders.co/users/login 보다는 그냥 깔끔하게 mincoders.co/login 에 접속
 해보라고 하는게 상대방 입장에서도 직관적일 것이다 그래서 그냥 이렇게 글로벌 라우터를 만드는 것이다
 자, 라우터는 어떻게 만드는 걸까?
-일단 우리는 3개의 라우터가 있다 글로벌 라우터, users 라우터, videos 라우터.
+일단 우리는 3개의 라우터가 있다 global 라우터, users 라우터, videos 라우터.
 어케 만드냐면 그냥 sever.js에서 const globalRouter = express.Router(); 이렇게 하면 된다
 글로벌 라우터 완성! 나머지 두 라우터도 똑같이 해서 만들 수 있다
 이 라우터를 어케 쓸 수 있을까?
