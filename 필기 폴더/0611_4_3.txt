@@ -1,0 +1,96 @@
+{4_3_Exports}
+videoController 파일처럼 여러 변수를 export 하고 싶을 때는 어떻게 해야할까?
+export default 는 하나의 변수 밖에 export 못하는데 말이다 이때 필요한게 그냥 export이다
+videoController 파일에서 export 하고 싶은 변수 앞에다가 전부 export를 붙여보자
+userController 안에도 변수 선언한거 앞에다가 export를 붙여주자
+이렇게 하면 한 파일에서 여러 변수를 export 할 수 있다 그렇다면 이걸 import 할때는 어떻게
+할까? 바로 {} 오브젝트를 써줘야 한다 import {join} from "파일 주소"; 이런식으로 말이다
+흠 이게 바로 그냥 export 할때와 export default 할때와의 차이인데 export default한 변수를
+import 할 떄는 전에 배웠던 것처럼 원하는 어떤이름으로 import가 가능하다 왜냐면 export default
+는 한가지 변수 만 export 하기 때문이다. 반면 그냥 export는 여러 변수를 export 할 수 있으므로
+이때는 import 할때 기존에 선언한 변수의 이름을 그대로 가져와줘야 한다 그리고 그 이름을
+오브젝트 {} 로 감싸줘야 한다 그리고 그 오브젝트 안에 가져오고 싶은 변수를 다 입력해주면 된다
+이렇게 변수를 가져와서 쓰는 것을 refer, 즉 참조라고 한다
+
+{userController.js}
+export const join = (req, res) => res.send("Join!");
+export const edit = (req, res) => res.send("edit User Profile");
+export const del = (req, res) => res.send("delete User Profile");
+
+{userRouter.js}
+import express from "express";
+import { edit, del } from "../controllers/userController";
+const userRouter = express.Router();
+
+userRouter.get("/edit", edit);
+userRouter.get("/delete", del);
+
+export default userRouter;
+
+{4_6_PlanningRoutes}
+인제 url의 플랜을 짜보자고 유저 입장에서 생각해서 플랜을 짜보자
+일단 기존에 README 파일에 만들었던 틀은 계속 유지할 것이다. 근데 그중
+/video/watch -> /video/:id 할 것이다 id의 의미는 다음 동영상에서 더 자세히 팔테지만 id는
+너가 틀고자 하는 영상의 id를 의미한다 그리고 /users/edit, /users/delete, users/logout 같은
+url들은 나, 즉 로그인한 유저만이 접속 가능하도록 할 것이다
+일단 아래 나열한 거 정도만 하고 나중에 댓글이나 좋아요 url을 추가 할 것이다
+README 파일에 수정한 url들을 아래 나열해보겠다
+{global}
+/ -> home
+/join -> Join
+/login -> Login
+/search -> Search
+
+{users}
+/users/:id -> See User
+/users/logout -> Log Out
+/users/edit -> Edit MY Profile
+/users/delete -> Delete MY Profile
+
+{videos}
+/videos/:id -> See Video
+/videos/:id/edit -> Edit Video
+/videos/:id/delete -> Delete Video
+/videos/upload -> Upload Video 
+
+인제 이 url들을 각 라우터에 추가해보자 일단 글로벌 라우터의 경우 login, search를 추가해줘
+야 하는데 이들의 컨트롤러는 각각 userController, videoController에 존재하는게 상식적이다
+아 그리고 지금까지는 response로 그냥 텍스트를 보내는 res.send를 했는데 이후에는 드디어
+각 페이지에 html을 렌더링하는 법을 배울 것이다
+자 일단 우리의 라우터들에 위의 추가한 url들을 전부 넣어주자 여기 첨부할 코드는 userRouter
+하나만 예시로 첨부하도록 하겠다 그리고 다음 장에서는 :id 에 대해서 알아보겠다 매우 강력한
+녀석이라 알아둘 필요가 있다
+
+{userRouter.js}
+import express from "express";
+import { logout, edit, remove, see } from "../controllers/userController";
+const userRouter = express.Router();
+
+userRouter.get("/logout", logout);
+userRouter.get("/edit", edit);
+userRouter.get("/remove", remove);
+userRouter.get("/:id", see);
+
+export default userRouter;
+
+{userController.js}
+export const join = (req, res) => res.send("Join!");
+export const edit = (req, res) => res.send("edit User Profile");
+export const remove = (req, res) => res.send("remove User Profile");
+export const login = (req, res) => res.send("Login please");
+export const logout = (req, res) => res.send("Log Out");
+export const see = (req, res) => res.send("See Users");
+
+{4_7_urlParametersOne}
+이 장에서는 :id에서 id와 콜론의 역할에 대해 배울것이다 이 콜론은
+parameter라고 한다 이건 url 안에 변수를 포함시킬 수 있게 해주는 애이다
+https://nomadcoders.co/wetube/lectures/2661 이 강의 주소에서 마지막에 2661 이 숫자가
+변수이다 이런 파라미터들이 없다면 우리는 페이지를 만들때 영상 각각마다 라우터를 새로
+만들어야 할 것이다 긍까 만약 비디오 1,2,3,4,5 가 우리 프로젝트에 있다 치면
+파라미터 없이는 /video/1, /video/2, /video/3, /video/4, /video/5 이렇게 5개의 url에 대해
+get을 다해줘야 하는데 이는 매우 불편하고 코드 길어진다 그래서 파라미터가 필요한 것이다
+url안에 변수가 들어가는걸 허용해준다 위 5개의 url을 그냥 /video/:id 이렇게 쓸 수 있다는 것
+파라미터 앞에 : 콜론이 있는 이유는 express에게 이 :id가 변수라는 것을 알려주기 위함이다
+자 인제 이걸 코드에서 어떻게 접근하는지 보여주기 위해 대표적으로 see 컨트롤러를 수정해볼
+것이다 uuserController 파일에서 see 코드를 조금 수정해서 Watch video send하기 전에
+req.params를 console.log 해보겠다

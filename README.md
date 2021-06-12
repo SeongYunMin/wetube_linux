@@ -10,11 +10,13 @@ SeongYunMin
 /search -> Search
 
 {users}
-/users/edit -> Edit User
-/users/delete -> Delete User
+/user/:id -> See User
+/user/logout -> Log Out
+/user/edit -> Edit MY Profile
+/user/remove -> remove MY Profile
 
 {videos}
-/videos/watch -> Watch Video
-/videos/edit -> Edit Video
-/videos/delete -> Delete Video
-/videos/comments -> Comment on a Video
+/video/:id -> See Video
+/video/:id/edit -> Edit Video
+/video/:id/delete -> Delete Video
+/video/upload -> Upload Video
