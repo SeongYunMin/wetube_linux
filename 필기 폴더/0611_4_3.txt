@@ -95,14 +95,14 @@ url안에 변수가 들어가는걸 허용해준다 위 5개의 url을 그냥 /v
 것이다 uuserController 파일에서 see 코드를 조금 수정해서 Watch video send하기 전에
 req.params를 console.log 해보겠다(params는 parameter의 약자)
 이렇게 한후 /video/123123 들어가보면 콘솔창에 {id: '123123'} 이 출력됨을 알 수 있다
-즉 이 url주소의 id가 출력 됐다 즉 express는 이 url이 변수를 가지고 있음을 인지한다
-인제 edit과 delete 에도 req.params를 넣어보자 이 req 오브젝트는 매우 유용하다
+즉 이 url주소의 id를 포함한 오브젝트 출력 됐다 즉 express는 이 url이 변수를 가지고 있음을
+인지한다 인제 edit과 delete 에도 req.params를 넣어보자 이 req 오브젝트는 매우 유용하다
 리퀘스트 할때의 정보를 가져올 수 있기 때문이다 명심히자! url에 변수를 집어넣을려면
 콜론 : 를 만들고자하는 변수명 앞에 붙여야 한다
 인제 컨트롤러 파일에서 console.log(req.params); 지우고 그냥 res.send 안에 req.params.id
 써서 문자열로 화면에 내보내도록 코드를 수정했다
-(req.params는 url에 있는 모든 parameter 다 불러오고 req.params.id 는 딱 id parameter만
-불러온다)
+(req.params는 url에 있는 모든 parameter 를 오브젝트로 묶어서 불러오고 req.params.id 는
+그 오브젝트 내에서 딱 id parameter만 불러온다)
 아 그리고 중요한 점이 videoRouter 파일에서 videoRouter.get("/upload", upload); 은
 app.get 들 중 가장 상단에 위치해야만 한다! 왜냐하면 만약 중간에 위치하였을경우
 특히 videoRouter.get("/:id", see); 아래에 위치할 경우 만약 주소창에 /video/upload 입력
