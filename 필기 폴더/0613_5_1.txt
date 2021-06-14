@@ -39,7 +39,7 @@ export const upload = (req, res) => res.send("Upload Video");
 된다 실행해보자 오 인제 된다
 자 인제 pug로 돌아가자 pug의 좋은점 중하나는 html을 깔끔하게 작성할 수 있다는 점이다 그러나
 이게 최고 장점은 아니다 퍼그의 메인 장점은 반복을 할 필요가 없다는 것이다 인제
-나머지 페이지들도 pug써서 rendering 해보자 일단 videoController.js의 see 컨트롤러를 건드릴
+나머지 페이지들도 pug써서 rendering 해보자 일단 videoController.j의 see 컨트롤러를 건드릴
 건데 res.render("watch"); 를 써서 pug 파일을 불러오자
 watch.pug 파일에서 우리가 배워볼 것은 탬플릿 상에서 js를 바로 쓸 수 있는 방법이다
 바로 #{javascript} 를 필요한 위치에 써주면 된다 여기선 footer에서 년도를 최신화하기 위해

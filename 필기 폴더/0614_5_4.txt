@@ -1,0 +1,120 @@
+{5_4_VariablesToTemplates}
+자 인제 조-금 더 줄여보자 지금 우리의 home,watch,edit pug파일에서 반복되는게 또 뭐가 있지?
+바로 title 의  | Wetube 이다 이건 모든 페이지의 title에 다 있을 것이다
+인제 이 반복을 없애줄 것인데 우선 block title을 다 지워보자 그리고 base.pug에서도
+block title 지우고 그냥 title태그를 첨가해보자 그리고 그 태그의 컨텐츠로
+#{pageTitle} | Wetube 를 넣자 #{}은 footer에서 본적이 있는데 그땐 JS 코드를 실행하기 위해
+썼다 여기서 #은 변수를 주는 역할을 한다 이 변수에 값은 우리가 줘야한다
+만약 그냥 지금 이 상태로 / 페이지 들어가보면 타이틀은 | Wetube 일 것이다
+(home.pug는 base.pug를 extends 한 거기 때문)
+자 그러면 인제 이 템플릿에 변수를 어떻게 보낼 수 있을까? 답은 누가 이 템플릿을 렌더링
+하고 있는가에 있다. 바로 컨트롤러이다 자 인제 컨트롤러 부분을 수정하러 가보자
+res.render()는 누가지 인자를 가진다 첫번쨰는 탬플릿이 있는 파일을 가리키는 인자이고
+두번쨰는 그 탬플릿에 만약 변수가 선언돼있다면 변수를 넣을 수 있는 인자이다
+변수는 여러개 있을 수 있으므로 오브젝트 형태로 인자 구성된다
+res.render("home", { pageTitle: "Home" }); 이렇게 렌더링 메소드를 통해 변수 값을 넣어줄
+수 있다 이렇게 컨트롤러, 즉 백엔드에서 html에 필요한 변수를 보낼 수 있다!
+{videoController.js}
+export const trending = (req, res) =>
+  res.render("home", { pageTitle: "Home", potato: "tomato" });
+export const search = (req, res) => res.send("Search");
+export const see = (req, res) => res.render("watch", { pageTitle: "Watch" });
+export const edit = (req, res) => res.render("edit", { pageTitle: "Edit" });
+
+export const deleteVideo = (req, res) => {
+  res.send(`delete video #${req.params.id}`);
+};
+export const upload = (req, res) => res.send("Upload Video");
+
+{base.pug}
+doctype html
+html(lang="ko")
+    head 
+        title #{pageTitle} | Wetube
+    body 
+        block content
+    include partials/footer
+
+{home.pug}
+extends base.pug
+
+block content 
+    h1 I love #{potato}
+
+{5_6_MVPstyles}
+자 여기서 드는 궁금증은 썜, 그럼 CSS는 언제 해요 이다. 답은 매---우 나중에 할 것이다
+가장 나중에 다룰 것이다 그래서 일단 css로 꾸미는건 차치해두고 지금 html은 너무 못생겼다
+기본적으로 HTML의 element 들을 예쁘게 만들어주는 MVP.css 에 대해 알아보자구 
+일단 사이트에 들어가보자 그리고 거기서 제공해준 link태그를 pug 스타일로 base.pug의
+head 태그에 넣어주자 그리고 home.pug에 버튼을 하나 만들어보자 매우 예쁘게 바뀐걸 볼 수 있다
+그냥 못생기게 코드 짜기 싫으니깐 이거 써봤다 이거 쓰고 main이나 footer태그 넣어주면
+자동으로 좌우 여백을 여유롭게 주는 style이 입혀진다
+진짜 CSS는 일단 nodeJS로 백엔드 부분을 빡세게 한 뒤에, 프론트엔드를 끝내고 그리고
+JS로 비디오 플레이어 만들어보고 그 후에 할 것이다
+{base.pug}
+doctype html
+html(lang="ko")
+    head 
+        title #{pageTitle} | Wetube
+        link(rel="stylesheet" href="https://unpkg.com/mvp.css")
+    body
+        main
+            block content
+    include partials/footer
+
+{5_7_Conditionals}
+condtionals는 기존에 우리가 많이 배운 조건문에 대한 내용이다 우선 base.pug에서
+바디 태그 안에 header태그를 만들고 그 안에 h1=pageTitle 입력해보자
+pug는 =, 즉 등호 뒤에 오는 값은 변수로 이해한다 #{} 이거로도 변수 넣을 수 있고
+등호(=) 로도 변수 넣을 수 있다 등호와 #{}의 차이는 영상 보면 알 수 있다
+인제 진짜 condtionals에 대해 배워보자 일단 base에 nav태그 만들어보자
+그리고 그안에 a 태그로 Login 링크 만들어보도록 하자
+자 그리고 videoController.js에 fakeUser 오브젝트를 하나 선언해보자
+그 안에는 username과 loggedin 정보가 담겨있다 그리고 그 오브젝트를 trending 컨트롤러
+에서 res.render 메소드의 두번쨰 인자, 즉 변수 값으로 넣어보았다
+그리고 인제 이 fakeUser의 로그인 여부에 따라 다르게 작동하는 base 템플릿을 만들어볼 것이다
+그러기 위해 일단 base의 nav태그에 2개의 li를 만들어줬는데 각각 log out, log in 이다
+자 인제 fakeUser.loggedin의 true false 여부에 따라 두 태그 중 하나만 화면에 표시하는
+코드를 짤 건데 이때 필요한게 condtionals 이다 얘는 if condition, else if condition,
+else condition 이렇게 이뤄져있다 이거 써서 코드 짜보자
+base.pug에 짠 코드 보면 condtionals 이해 잘 될것이다
+자 이렇게 하면 로그인 여부에 따라 home 화면을 달리 보여줄 수 있다 
+이렇게 백엔드(trending컨트롤러)에서 정보(fakeUser)를 템플릿으로 보내고 그 정보를 사용해
+상황에 맞게 화면을 렌더링하는 법을 배웠다
+{videoController.js}
+const fakeUser = {
+  username: "Nicolas",
+  loggedIn: true,
+};
+
+export const trending = (req, res) =>
+  res.render("home", { pageTitle: "Home", fakeUser });
+export const search = (req, res) => res.send("Search");
+export const see = (req, res) => res.render("watch", { pageTitle: "Watch" });
+export const edit = (req, res) => res.render("edit", { pageTitle: "Edit" });
+
+export const deleteVideo = (req, res) => res.send("Delete Video");
+export const upload = (req, res) => res.send("Upload Video");
+
+{base.pug}
+doctype html
+html(lang="ko")
+    head 
+        title #{pageTitle} | Wetube
+        link(rel="stylesheet" href="https://unpkg.com/mvp.css")
+    body
+        header
+            if fakeUser.loggedIn 
+                small Hello #{fakeUser.username}!
+            nav
+                ul 
+                    if fakeUser.loggedIn
+                        li
+                            a(href="/logout") Log out
+                    else
+                        li 
+                            a(href="/login") Login
+            h1=pageTitle
+        main
+            block content
+    include partials/footer
