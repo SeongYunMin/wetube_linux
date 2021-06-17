@@ -1,0 +1,116 @@
+{6_0_ArrayDatabaseOne}
+자 인제 드디어 탬플릿이 끝났다. 인제 DATABASE로 넘어가보자!
+자 일단 라우터 파일에 가보자. 우리는 아직 app.get 밖에 배우지 않았다 인제 우린
+post(게시)에 대해 배울 것이다 먼저 data를 어떻게 백엔드에 post 하는지 배우고
+data를 post 하는게 익숙해질 때 거기에 database를 추가해볼 것이다 그리고 그후 그걸
+다 동원해서 백엔드에 data를 post할 거다 그리고 그 data를 우리의 database에 저장해볼 것이다
+자 우선 videoController에 가서 trending 안에 있던 videos 어레이 선언한 것을 let으로
+선언하고 trending 바깥으로 뺄 것이다 인제 모든 컨트롤러에서 videos 어레이 사용 가능하다
+자 인제 
+첫번쨰로 이 fake data를 list화 할것인데 이건 이미 iteration과 mixin 써서 home 페이지에
+해놨다 홈페이지에 모든 비디오 리스팅돼있다
+두번쨰로 나는 유저가 하나의 비디오를 볼 수 있었으면 좋겠다 따라서 watch controller를 바꿔줄
+것이다
+세번쨰로 나는 유저가 비디오를 upload할 수 있었으면 좋겠다 당연히 upload controller를 쓸 것이다
+이 세 과정을 모두 fake database에서 해볼 것이다 그리고나서 진짜 database에서 해보겠다
+우리의 fake database인 videos 어레이의 오브젝트 각각에 id를 부여해주자 나중에 진짜
+database 쓸때는 알아서 id 부여해줄 것이다
+자 인제 나의 목표는 home 페이지에서 listing 된 각 비디오를 클릭했을때 /video/id 로 들어가게끔
+하고 싶다. 자 이걸 하기 위해 각 h3 태그를 링크로 바꿔줘야 하는데 이건 어디서 수정할 수 있을까?
+바로 우리가 만든 video mixin에서 할 수 있을 것이다
+자 video mixin에서 h4태그 안에 a 태그만들어서 링크 생성하고 href 속성으로 주소를 부여하자
+근데 이때 그냥 "/video/#{video.id}" 해주면 페이지에서 해당 링크 클릭했을때 에러가 뜬다 어카지?
+첫번쨰 해결책은 "/video/" + video.id 이렇게 해주는 것이다 그냥 이어버리는 거지 이렇게도 된다
+두번째는 바로 JavaScript template string을 쓰는 것이다 예전에 배운 건데
+'/video/${video.id}' 이렇게 백틱과 달러 기호를 써서 string안에 변수를 넣는 방법이다 
+방금 우린 pug의 또다른 규칙을 배웠다 html의 attribute에서 변수를 넣을 일 있으면
+"#{}" 이걸 쓰면 안되고 `${}` 이 JS에서 배운 기존의 방법을 써야한다!! 자 이렇게 우리 미션의
+첫번쨰 파트가 끝났다. 
+두번쨰 파트는 watch 컨트롤러를 수정하는 것이다 컨트롤러에 console.log(req.params.id) 넣어서
+각 링크 클릭할때마다 해당 동영상 id가 콘솔창에 뜨게 했다 아 근데 req.params는 오브젝트이므로 
+얘전에 배웠던 distructuring을 써서 아얘 id 변수 선언해봤다
+그리고 video 변수도 선언해서 video[index] 오브젝트가 저장되게 했다
+자 인제 방금까지 배웠던 코드의 해석을 순서대로 해보자 우선 나는 home 페이지에서 First Video
+링크를 눌렀다 그러면 mixin/video.pug의 a태그에 의해 /video/1 열라는 request 발생하고 이는
+videoRouter.js에 있는 videoRouter.get("/:id(\\d+)", watch); 를 자극해서 watch 컨트롤러가 실행
+되게 한다 그러면 watch 실행돼서 콘솔창에 Show video #1 출력하고 watch 탬플릿을 브라우저에
+렌더링하게 된다 자 우린 인제 페이지를 만들거고, 페이지의 링크는 이렇게 어떤 id를 가질 텐데
+그럼 우린 그 ㅇid를 얻어서 그 id를 가지고 있는 동영상을 찾아줄 거고 그런 다음 이것저것을 
+render할 것이다
+{mixin/video.pug}
+mixin video(video)
+    div 
+        h4 
+            a(href=`/video/${video.id}`)=video.title
+        ul
+            li #{video.rating}/5
+            li #{video.comments} comments.
+            li Posted #{video.createdAt}
+            li #{video.views} views
+
+{videoRouter.js}
+import express from "express";
+import { watch, edit, deleteVideo, upload } from "../controllers/videoController";
+const videoRouter = express.Router();
+
+videoRouter.get("/:id(\\d+)", watch);
+videoRouter.get("/:id(\\d+)/edit", edit);
+videoRouter.get("/:id(\\d+)/delete", deleteVideo);
+videoRouter.get("/upload", upload);
+
+export default videoRouter;
+
+
+{videoController.js}
+let videos = [아이템 생략];
+
+export const trending = (req, res) =>
+  res.render("home", { pageTitle: "Home", videos });
+export const search = (req, res) => res.send("Search");
+export const watch = (req, res) => {
+  const { id } = req.params;
+  const video = videos[id - 1];
+  console.log(`Show video #${id}`);
+  res.render("watch", { pageTitle: `Watch ${video.title}`, video });
+};
+export const edit = (req, res) => res.render("edit", { pageTitle: "Edit" });
+export const deleteVideo = (req, res) => res.send("Delete Video");
+export const upload = (req, res) => res.send("Upload Video");
+
+{6_1_ArrayDatabaseTwo}
+자 인제 watch.pug를 좀 더 꾸며볼건데 video.views를 써서 59 views 같이 조회수를 출력하는 코드를 
+짜보자 근데 영상의 조회수가 1일 수도 있는것 아닌가? 그땐 views가 아닌 view가 출력돼야한다
+따라서 여기서 아주 유용한 ternary operator를 써보자
+이 ternary operator 또한 JS 문법이므로 #{} 안에 써야 한다
+block content 
+    h3 #{video.views} #{video.views > 1 ? "views" : "view"}
+이렇게 조건이 true일때와 false일때 각각 다른 string을 반환하는 ternary operator를
+써봤다
+인제 watch 페이지에 이 동영상을 edit 하는 링크를 만들어보자
+(a 태그 안에 있는 &rarr; 는 right arrow 기호를 출력하는 코드이다)
+자 근데 href="" 안에 주소를 넣어야 하는데 그냥 "edit"을 한번 넣어봤다 그리고 실행시키니
+신기하게도 /video/edit으로 이동한다 근데 "/edit" 을 넣게 되면 /edit 으로 이동한다
+이게 바로 relative url과 absolute url의 차이점이다 너가 지금 어느 페이지에 있든
+/edit 이렇게 앞에 슬래쉬를 붙이게 되면 너는 root 주소(http://localhost:4000/) + /edit
+으로 이동하게 된다 근데 슬래쉬가 없이 그냥 edit만 쓰게 되면 브라우저는
+그냥 지금 너가 있는 /video/1 에서 끝 부분만 입력한 edit으로 바꾼 주소로 이동을 시켜준다
+즉 /video/1 에서 /video/edit으로 이동하게 되는 것이다 이게 relative url이다
+이게 absolute url과 relative url의 차이점이다
+그렇다면 "1/edit" 을 넣게된다면? 당연히 /video/1 에서 /video/1/edit 으로 이동하게 된다
+우린 모든 id에 범용적으로 통하는 href를 넣을 것이므로 href=`${video.id}/edit`
+이렇게 넣어줄 것이다 다시 말하지만 / 로 시작하면 absolute이고 / 없이 시작하면 relative 이다
+자 인제 edit 컨트롤러를 만져줄 차례이다 드디어 다음장에서 post에 대해서 배워볼 것이다
+{videoController.js 내의 watch 컨트롤러}
+export const watch = (req, res) => {
+  const { id } = req.params;
+  const video = videos[id - 1];
+  console.log(`Show video #${id}`);
+  res.render("watch", { pageTitle: `Watch ${video.title}`, video });
+};
+
+{watch.pug}
+extends base.pug
+
+block content 
+    h3 #{video.views} #{video.views > 1 ? "views" : "view"}
+    a(href=`${video.id}/edit`) Edit Video &rarr;

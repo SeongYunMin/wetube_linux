@@ -19,6 +19,7 @@ li Sorry. Nothing found 이거 넣어서 예외 처리해주면 된다
 더 많은 종류의 iteration은 pug 사이트에서 찾아보면 된다
 앞으로 화면에 댓글이나 비디오 다른 무엇이든 리스트를 보여주고 싶을때에는 iteration을 쓸 것이다
 다음장에선 오브젝트로 구성된 어레이에 대해 iteration을 해볼 것이다
+아 맞다 iterate은 반복하다 라는 뜻이다
 {videoController.js}
 export const trending = (req, res) => {
   const videos = [];
