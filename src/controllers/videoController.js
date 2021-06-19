@@ -27,17 +27,24 @@ let videos = [
 
 export const trending = (req, res) =>
   res.render("home", { pageTitle: "Home", videos });
-export const search = (req, res) => res.send("Search");
+
 export const watch = (req, res) => {
   const { id } = req.params;
   const video = videos[id - 1];
   console.log(`Show video #${id}`);
   res.render("watch", { pageTitle: `Watching: ${video.title}`, video });
 };
-export const edit = (req, res) => {
+
+export const getEdit = (req, res) => {
   const { id } = req.params;
   const video = videos[id - 1];
   return res.render("edit", { pageTitle: `Editing: ${video.title}`, video });
 };
-export const deleteVideo = (req, res) => res.send("Delete Video");
-export const upload = (req, res) => res.send("Upload Video");
+
+export const postEdit = (req, res) => {
+  const { id } = req.params;
+  const { title } = req.body;
+  // console.log(req.body);
+  videos[id - 1].title = title;
+  return res.redirect(`/video/${id}`);
+};
