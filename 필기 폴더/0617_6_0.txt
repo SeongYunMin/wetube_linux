@@ -91,7 +91,7 @@ block content
 자 근데 href="" 안에 주소를 넣어야 하는데 그냥 "edit"을 한번 넣어봤다 그리고 실행시키니
 신기하게도 /video/edit으로 이동한다 근데 "/edit" 을 넣게 되면 /edit 으로 이동한다
 이게 바로 relative url과 absolute url의 차이점이다 너가 지금 어느 페이지에 있든
-/edit 이렇게 앞에 슬래쉬를 붙이게 되면 너는 root 주소(http://localhost:4000/) + /edit
+/edit 이렇게 앞에 슬래쉬를 붙이게 되면 너는 root 주소(http://localhost:4000) + /edit
 으로 이동하게 된다 근데 슬래쉬가 없이 그냥 edit만 쓰게 되면 브라우저는
 그냥 지금 너가 있는 /video/1 에서 끝 부분만 입력한 edit으로 바꾼 주소로 이동을 시켜준다
 즉 /video/1 에서 /video/edit으로 이동하게 되는 것이다 이게 relative url이다
