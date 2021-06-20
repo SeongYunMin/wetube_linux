@@ -2,7 +2,7 @@
 watch컨트롤러와 마찬가지로 edit 컨트롤러도 똑같이 id랑 video 변수에 각각의 정보를 저장
 해줬다 그리고 edit.pug 파일에 가서 form을 하나 만들어주자 form의 속성인 action은 좀 있다
 배울것이다 자 인제 form 태그 안에 input 엘레먼트들을 넣어서 video title을 바꿀 수 있는
-input 엘레먼트와 save 버튼을 넣었다 자 인제 비디오를 이 페이지로 보내고 싶다 어칼까?
+input 검색창과 save 버튼을 넣었다 자 인제 비디오를 이 페이지로 보내고 싶다 어칼까?
 백엔드(컨트롤러)에서 무언갈 보내는 방법으론 일단 배운것은 res.render의 두번째 인자로 변수를
 오브젝트형태로 넣어주는 것이다
 이걸 input 엘레먼트에 써보자 input의 속성으로 value=video.title 을 넣어주는 것이다
@@ -22,13 +22,13 @@ input 엘레먼트와 save 버튼을 넣었다 자 인제 비디오를 이 페�
 이 둘의 차이를 알려면 우선 input의 이름을 지어줘야 한다 input 안에 name="titlee" 속성을 
 넣어주고 form 속성을 action="/save-changes' 로 바꾼 후 save 버튼 누르면 url창에 
 /save-changes?titlee=First+Video 이렇게 뜸을 알 수 있다
-즉 검색창에 입력한 값(여기선 First Video)가 url에 출력된다 이게 get method가 하는 일이다(
+즉 검색창에 입력한 값(여기선 First Video)가 url에 출력된다 이게 get method가 하는 일이다
 form의 method 속성의 디폴트값은 method="GET"이다
 그렇다면 get method를 쓰는 form은 언제 쓰는 것일까? 예를 들어 구글에서 뭔가를 검색하면
 그 검색어가 주소창의 url에 포함돼있을 것이다 이렇게 검색할때 get을 사용한다
 post는 언제 사용할까? 얘는 파일을 보내거나, database에 있는 값을 수정하는 뭔가를 보낼 때 
 사용한다 또 로그인할때 id나 password를 보낼때도 post를 사용한다. get 쓰면 url에 흔적이 남기
-때문 그렇다면 form(action="/save-changes", method="POST") 이렇게 action과 method="POST' 속성
+때문 그렇다면 form(action="/save-changes", method="POST") 이렇게 action과 ㅁmethod="POST' 속성
 같이 쓰면 어케 될까? 이렇게 한 후 save 버튼 누르면 /save-changes로 이동하는 건 똑같지만
 url은 그냥 /save-changes 만 뜬다 검색한 값이 url에 포함되지 않는다
 자 나는 새 route를 만들고 싶지 않으므로 action은 지우고 method="POST"만 남기겠다
@@ -37,7 +37,7 @@ post인 것이다 인제 저 Cannot POST 에러를 해결해보자 브라우저�
 방법은 간단하다 videoRouter.js에서 videoRouter.post("/:id(\\d+)/edit", postEdit) 
 이렇게 post 메서드 추가하고 videoController에도 postEdit이라는 컨트롤러 만들면 된다
 그리고 기존의 edit 컨트롤러는 getEdit 으로 바꿔서 구별을 명확히 할 것이다
-getEdit은 form을 화면에 보여주는 애이고 postEdit은 변경사항을 저장해주는 녀석임을 이름만 봐도
+getEdit은 edit form을 화면에 보여주는 애이고 postEdit은 변경사항을 저장해주는 녀석임을 이름만 봐도
 알 수 있다 자 이렇게 post 메서드에 대한 컨트롤러도 만들었으니 다시 save 버튼을 눌러보자
 아직 postEdit 컨트롤러는 비어있어서 클릭해도 아무 반응 없지만 콘솔창을 통해 save누를 때마다
 POST 리퀘스트 받고 있음을 볼 수 있다 다음 장에서든 이 POST리퀘스트를 처리해볼 것이다 
@@ -79,12 +79,12 @@ req를 받고 respose로 비디오 title 수정할 수 있는 form을 render한�
 title 수정하고 save 버튼 누르면 postEdit 컨트롤러가 req받고 res.redirect 실행해서
 그 전 watch 페이지로 돌아가게 된다 
 인제 form으로부터 입력받은 값을 얻어서 저장해보자 이 바꾼 타이틀 data를 어떻게  받을 수 있을까?
-req.params가 id를 가져올 수 있는 것처럼 req.body 쓰면 입력한 데이터 받을 수 있지 않을까?
+req.params가 id를 가져올 수 있는 것처럼 req.body 쓰면 검색창에 입력한 데이터 받을 수 있지 않을까?
 아쉽게도 콘솔창에 이거 출력해보면 undefined 나온다. 아직 express는 form에서 데이터를 받는
 법을 모르는 것이다. 따라서 뭔가 설정을 더 해줘야 한다
-이 설정은 express.urlencoded로 할 수 있는데 epressjs에 들어가면 이 메서드에 대한 설명을
-찾아볼 수 있을것이다 이 메서드는 몇가지 속성들이 있는데 우린 그중 extended를 쓸 것이다
-얘는 req.body에 있는 정보들을 보기 좋게 형식을 갖춰주는 역할을 한다 자 이 설정은 미들웨어에서
+이 설정은 express.urlencoded(유알엘인코디드)로 할 수 있는데 epressjs에 들어가면 이 메서드에 대한 
+설명을 찾아볼 수 있을것이다 이 메서드는 몇가지 속성들이 있는데 우린 그중 extended를 쓸 것이다
+얘는 req.body에 있는 정보들을 보기 좋게 오브젝트로 갖춰주는 역할을 한다 자 이 설정은 미들웨어에서
 해야하므로 sever.js에 가보자 이 미들웨어는 당연히 route 보다 전에 작성돼야 이 middleware가
 form을 이해하고 그것들을 자바스크립트로 변형시켜줘서 우리가 사용할 수 있게 해준다 예전에 배웠다
 자 인제 route 설정한거 이전 위치에 app.use(express.urlencoded({extended:true}))를 넣어주자

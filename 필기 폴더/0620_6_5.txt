@@ -1,0 +1,53 @@
+{6_5_MorePracticeOne}
+자 인제 우리가 했던 컨트롤러와 form간의 dance를 몇번 더 연습해보자 form 을 get하고나 post하는
+것들 말이다 우린 인제 video를 upload를 하는 페이지를 만들것이다 아직까지는 fake database를
+쓰고 있으므로 우리가 upload페이지에서 upload 버튼을 누르면 새로운 오브젝트가 videos 어레이
+에 추가되게 해볼 것이다 처음으로 해야할 것은 url을 get하는 것이다 그래야 user가 form을 볼 수
+있으므로 그렇다 배운대로 getUpload 와 postUpload 컨트롤러 만들고 이걸 라우터에 가져와서
+라우팅해주고 인제 upload.pug 탬플릿을 꾸며주자
+그전에 먼저 우린 모든 페이지에서 상단 nav바에 Upload Video 링크가 뜨도록 하고 싶다
+따라서 base.pug에서 nav>ul>li 태그 만들고 그안에 upload video 링크 넣으려했는데
+흠 이 nav바는 사실 홈화면에서만 보이는게 좋을 것 같다 block nav 하나 만들어서 홈 화면에만
+upload video 뜨게 만들었다 자 upload.pug에서 우린 form이 필요하다 그리고 input 2개도 필요함
+자 이렇게 form 만들었으니 인제 POST 컨트롤러를 꾸며줘야한다
+{videoRouter.js중 upload 관련된 것}
+videoRouter.route("/upload").get(getUpload).post(postUpload);
+
+{videoController.js 중 upload 관련된 것}
+export const getUpload = (req, res) => {
+  return res.render("upload", { pageTitle: "Uploading Video" });
+};
+export const postUpload = (req, res) => {
+  return res.redirect("/");
+};
+
+{upload.pug}
+extends base.pug
+block content 
+    form(method="POST")
+        input(placeholder="Title", required, type="text")
+        input(type="submit",value="Upload Video")
+
+{6_6_MorePracticeTwo}
+지금은 Upload 버튼 누르면 post 컨트롤러에서 res.redirect("/")를 반환하므로
+홈페이지로 돌아간다 redirect는 홈페이지를 rerender한게 아니다 그냥 컨트롤러가
+브라우저로하여금 /로 다시 돌아가라고 명령을 내렸을 뿐이다
+자 인제 postUpload 컨트롤러 만져주자 form으로부터 받은 value는 req.body에 오브젝트
+형태로 존재한다 인제 newVideo 오브젝트 선언해서 그안에 받은 value값을 넣어주자
+자 그 이후 코드는 보면 이해될 것이다 보고 흐름을 파악해보자
+{videoController.js중 postEdit 컨트롤러}
+export const postUpload = (req, res) => {
+  console.log(req.body);
+  const title = req.body.uploadedTitle;
+  const newVideo = {
+    title,
+    rating: 0,
+    comments: 0,
+    createdAt: "just now",
+    views: 0,
+    id: videos.length + 1,
+  };
+  videos.push(newVideo);
+  return res.redirect("/");
+};
+
