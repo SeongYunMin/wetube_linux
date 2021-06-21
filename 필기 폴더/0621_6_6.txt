@@ -1,0 +1,18 @@
+{6_6}
+자 이렇게 가짜 데이터베이스를 가지고 다양한 컨트롤러 조작을 하는 법을 배웠다
+근데 알아야 되는게 우리의 데이터베이스는 서버상에만 존재하므로 서버를 재시작하면 다시
+초기화된다 즉 내가 코드를 수정하고 저장하면 nodemon에 대해 서버가 재시작되고 내가
+이전에 업로드하거나 에딧한 데이터베이스들은 전부 초기화된다 자 인제 진짜 DB를 다루는 법을
+배워보자
+{6_7_MongoDB}
+드디어 database 파트에 들어왔다 우리는 mongoDB를 쓸 것인데 얘는 다목적용이고 document-based이다 
+document-based 는 매우 중요한 개념인데 나중에 배우겠다 이 mongoDB는 초보자가 
+사용하기 쉬운 DB이다 보통의 어려운 db들은 주로 sql-based거나 row-based이다 이는 엑셀시트같은
+느낌의 db이다 근데 mongoDB는 document-based인데 이건 프로그래머가 DB를 (우리가 만든
+fake database처럼) 오브젝트 형태로 다룰 수 있는 방식을 의미한다 mongoDB에서 저장하는 것들은
+전부 JSON-like-document 이다 JSON, 즉 오브젝트형태로 데이터가 저장돼있다 게다가 mongoDB는
+document 내부를 검색할 수 있게 해준다 검색, 추가, 제거, 편집 다 가능하다
+mongoDB를 컴터에 다운받아보자 mongodb.com > docs > server 로 들어가서 다운받으먼 된다
+다운 받는 거는 linux 버전으로 다운받으면 되는데 만약 잘 안되면 
+https://jipro.tistory.com/45 여기 참고해서 다운받도록 하자
+왼쪽에서 2번쨰 컴에 mongoDB 다운받았다

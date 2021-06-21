@@ -6,7 +6,7 @@
 있으므로 그렇다 배운대로 getUpload 와 postUpload 컨트롤러 만들고 이걸 라우터에 가져와서
 라우팅해주고 인제 upload.pug 탬플릿을 꾸며주자
 그전에 먼저 우린 모든 페이지에서 상단 nav바에 Upload Video 링크가 뜨도록 하고 싶다
-따라서 base.pug에서 nav>ul>li 태그 만들고 그안에 upload video 링크 넣으려했는데
+따라서 base.pug에서 header>nav>ul>li 태그 만들고 그안에 upload video 링크 넣으려했는데
 흠 이 nav바는 사실 홈화면에서만 보이는게 좋을 것 같다 block nav 하나 만들어서 홈 화면에만
 upload video 뜨게 만들었다 자 upload.pug에서 우린 form이 필요하다 그리고 input 2개도 필요함
 자 이렇게 form 만들었으니 인제 POST 컨트롤러를 꾸며줘야한다
