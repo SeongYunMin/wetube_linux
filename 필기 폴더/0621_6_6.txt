@@ -15,4 +15,4 @@ document 내부를 검색할 수 있게 해준다 검색, 추가, 제거, 편집
 mongoDB를 컴터에 다운받아보자 mongodb.com > docs > server 로 들어가서 다운받으먼 된다
 다운 받는 거는 linux 버전으로 다운받으면 되는데 만약 잘 안되면 
 https://jipro.tistory.com/45 여기 참고해서 다운받도록 하자
-왼쪽에서 2번쨰 컴에 mongoDB 다운받았다
+오른쪽에서 첫번째 컴에 mongoDB 다운 받았다
