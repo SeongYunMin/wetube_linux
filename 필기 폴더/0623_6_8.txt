@@ -39,7 +39,7 @@ connection이 열린다는 것은 우리가 database에 연결된다는 뜻이�
 할떄, 즉 open이라는 이벤트 발생시 handleOpen으로 대응할 수 있는 코드를 만들어보자
 여기서 error 이벤트 다룰때는 on 쓰고 open 이벤트를 다룰 때는 once 쓴 이유는 error
 는 언제든지 반복해서 날 수 있지만 open 이벤트는 프로그램 실행시 딱 한번만 발생하기 때문이다
-자 복습해보자면 mongod를 키면서 database 서버가 연결이 됐고 우린 우리의 서버와 
+자 복습해보자면 mongod를 키면서 database 서버가 켜졌고 우린 우리의 서버와 
 database 서버를 mongoose를 통해 연결했다 그리고 mongoose.connection에서 발생하는 이벤트를
 catch해서 그에 대응할 수 있게끔 했다 아 맞다 server.js에 db.js 임포트 할 때는 파일 자체를
 import 해야한다 이렇게 하면 JS는 이 db 파일 import함과 동시에 이 파일을 실행시킨다
