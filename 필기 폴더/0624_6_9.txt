@@ -5,7 +5,7 @@
 구현해볼 것이다 이 CRUD 순서대로 프로젝트를 만들어갈 것이다 인제부터 조금 어려워질 것이다
 우린 mongoose랑 친해질 필요가 있다 우린 우선 user를 다루는 법부터 배울것이다
 자 시작하기 전에 우선 src/models라는 폴더를 만들겠다 그리고 그 안에 Video.js 파일 만들었다
-model이 뭘까? 기억하겠지만 mongoose는 우리가 mongoDB 와 대화할 수 있게 해준다 이 대화를 위해
+model이 뭘까? 기억하겠지만 mongoose는 우리서버가 mongoDB 와 대화할 수 있게 해준다 이 대화를 위해
 mongoose를 조금 도와줄 필요가 있다 mongoose에게 우리의 데이터가 어떻게 생겼는지 알려줄
 필요가 있다 예를들어 비디오에 어떤 타이틀이 있고, 버튼은 어떻게 생겼고 이런걸 알려줘야 한다
 이렇게 알려주고 나면 mongoose는 이 데이터를 CRUD 하는 것을 도와줄 것이다
@@ -30,7 +30,7 @@ schema 라고 한다 const videoSchema = new mongoose.Schema({}); 이렇게 스�
 단축해서 썼을 뿐이다 자 인제 좀 더 다양한 종류의 데이터(views, rating 등)은 meta라는
 항목에 다 넣을 것이다 meta는 여분이라는 뜻이다 meta 엘레먼트 안에 오브젝트 하나 만들고
 그 안에 views, rating 등을 넣으면 된다 자 인제 model을 만들 것이다 Video 이라는 변수 선언하고
-mongoose.model("모델 이름", 스키마 이름); 이렇게 넣어주면 된다 그리고 만든 Video를
+mongoose.model("모델 이름", 스키마); 이렇게 넣어주면 된다 그리고 만든 Video를
 export default 하면 된다 (보통 모델 이름은 대문자로 시작한다) 
 이 모델을 우리(server.js)가 쓰기 위해서 우리(server.js)한테 import를 해야한다
 자 인제 우리 모델을 직접 사용할 수 있는 단계까지 딱 한단계 남았다 그건 다음장에서 하겠다
