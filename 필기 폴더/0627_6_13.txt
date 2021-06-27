@@ -1,0 +1,67 @@
+{6_13_AsyncAwait}
+자 이전 장에서 배웠던 콜백을 사용해서 비동기를 처리하게 되면 좋은 점은 콜백함수의 인자 2개중에
+에러 인자가 포함돼있다는 것이다 즉 에러를 캐치하기가 쉽게 돼있다 추가적인 코드 없이 에러를
+핸들할 수 있어 편했다 근데 함수 안에 함수 넣고 하는 것은 지양해야한다 코드 복잡해지기 떄문
+따라서 인제 promise에 대해서 배워보자 특히 promise의 최신판인 async와 await을 사용할 것이다
+async 함수를 선언해주고 그 안에 await 변수를 만들어서 사용하는 것이다 await 은 말그대로
+입력한 행위가 끝날떄까지 기다리는 애이다 자 이렇게 async await 써서 코드 짜니깐 콘솔창에
+코드 순서대로 출력이 됨을 알 수 있다 콜백은 Video.find 안의 콜백함수가 가장 마지막에 출력되지
+않았는가? 얜 다르다 자 우선 await부터 알아보자 Video.find 함수 앞에 await을 넣으면 find 함수는
+내가 callback을 필요로 하지 않는다는 것을 알게 된다 그래서 인자가 {} search term 하나이다
+그냥 {} 이거에 해당하는 videos를 찾고 그 작업이 끝나면 videos 어레이에 저장할 것이다
+자 이제 우린 try catch 구문을 써서 오류를 캐치해낼 것이다 try catch 구문에 대한 자세한 
+설명은 es6_master_class 열어서 복습해보자 기본적으로 try{} 안에 정상 작동시 작동할 코드를 작성하고
+catch {} 안에 오류 났을시 렌더할 코드를 넣어주면 된다 이 코드를 만약 콜백함수를 써서
+작성할려면 에러를 캐치하기 위해 if(error){ } 이런 조건문을 콜백함수 안에 넣어야 해서 불편하다
+await 쓰면 얘는 database 컴파일될때까지 기다렸다가 다음 코드 실행하므로 훨씬 직관적으로 코드를
+짤 수 있다 await은 규칙상으로 async function 안에서만 쓸 수 있기때문에 함수 앞에 async 붙여
+주는 것이다 
+{videoController.js 중 home 컨트롤러 부분}
+export const home = async (req, res) => {
+  try {
+    console.log("i start");
+    const videos = await Video.find({});
+    console.log("i finish");
+    console.log(videos);
+    return res.render("home", { pageTitle: "Home", videos });
+  } catch (error) {
+    return res.render("server-error");
+  }
+};
+
+{6_14_ReturnsAndRenders}
+자 이전 장에서 async await 과 try catch 구문을 배웠는데 에러를 캐치하는 것은 추후에 
+할 것이므로 일단 try catch는 지웠다
+자 우린 인제 비동기까지 배웠으므로 진짜 database에서 비디오를 검색할 수 있게 됐다
+(이후 강의 내용을 위해 await 구문 지우고 callback 구문을 다시 가져왔다)
+어 근데 곰곰히 생각해보면 컨트롤러 안에서 return이 하는 역할이 없는것 같다
+그냥 return 지우고 res.render() 함수만 써도 잘 작동한다 함수 안에서 return의 역할은 무엇일까?
+return이 자신의 역할대로 작동하지 않는 이유는 return이 현재 함수 안에 있기 때문이다
+function 안에서 return은 그저 함수를 마무리하는 역할을 한다 값을 함수 밖으로 반환하는 그런
+역할을 하지 않는다는 것이다 express에서 return 은 사실 딱히 중요하지 않다 중요한건
+어떤 함수를 return 뒤에 썼는가 이다 render 함수의 경우 return 없이도 정상 작동하는 것을 볼
+수 있다 return 은 그저 함수를 그 행에서 끝내는 역할만 담당한다
+그리고 res.render의 경우 한 함수 내에서 2개가 올 수 없다 렌더는 컨트롤러당 하나만 가능하다
+render 뿐만 아니라 send나 redirect 같은 함수도 2개를 쓰게 되면 에러가 발생하게 된다
+이걸 통해 중요한 것은 return을 하느냐 안 하느냐가 아니라 어떤 function을 호출하는지가
+더 중요하다는 것을 알 수 있다 return은 해당 function을 종료시키는 역할만 한다
+근데 return을 쓰는게 좋다 그래야 res. 함수 를 중복해도 이후 함수를 무시할 수 있기 때문
+인제 home.pug에서 쓸데없는 부분을 조금 삭제했다
+{videoController.js 중 home 컨트롤러 부분}
+export const home = async (req, res) => {
+  Video.find({}, (error, videos) => {
+    res.render("home", { pageTitle: "Home", videos: [] });
+    res.sendStatus(200);
+  });
+};
+{home.pug}
+extends base
+include mixins/video
+
+block content 
+    ul
+        each info in videos
+            +video(info)
+        else 
+            li Sorry. Nothing found 
+
