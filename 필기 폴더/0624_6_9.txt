@@ -32,7 +32,7 @@ schema 라고 한다 const videoSchema = new mongoose.Schema({}); 이렇게 스�
 그 안에 views, rating 등을 넣으면 된다 자 인제 model을 만들 것이다 Video 이라는 변수 선언하고
 mongoose.model("모델 이름", 스키마); 이렇게 넣어주면 된다 그리고 만든 Video를
 export default 하면 된다 (보통 모델 이름은 대문자로 시작한다) 
-이 모델을 우리(server.js)가 쓰기 위해서 우리(server.js)한테 import를 해야한다
+이 모델을 우리(server.js)가 쓰기 위해서 우리(server.js)가 import를 해야한다
 자 인제 우리 모델을 직접 사용할 수 있는 단계까지 딱 한단계 남았다 그건 다음장에서 하겠다
 정리하자면 먼저 우린 데이터의 형식을 스키마를 사용해서 정의해주고 그 다음에 model을 만드는
 것이다 model은 두개의 인자를 가지는데 하나는 model의 이름이고 하나는 schema이다 그리고
