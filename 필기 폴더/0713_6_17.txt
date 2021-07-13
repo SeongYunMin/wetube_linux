@@ -1,0 +1,78 @@
+{6_17_ExceptionsAndValidations}
+자 인제 이걸 생각해보자 만약 createdAt이라는 항목 자체를 없앤체로 Video.create을 하면
+어떻게 될까? 전처럼 validation error가 뜰까? 안 뜬다 그냥 그 데이터 없는 채로 저장이 된다
+왜냐하면 우리가 그 createdAt이라는 항목이 required 하다고 설정하지 않았기 때문 즉 필수
+가 아니라고 생각하는 것이다 그래서 인제 이 항목을 required 하게 하기 위해 
+Video.js의 스키마를 수정해보자 createdAt 엘레먼트에 required: true를 추가해보자
+{ type: Date, required: true } 이렇게 수정해줬다 인제 createdAt 데이터 입력 안했을때도
+에러를 캐치해낼 것이다 확인해보니 정말 에러 발생한다! 에러 내용을 읽어보니 createdAt is
+required, 우리가 딱 원하는 에러가 발생했음을 알 수 있다
+에러 발생 시점에서 브라우저는 계속
+펜딩중인데 그 이유는 Video.create에서 에러가 발생해서 코드가 거기서 멈춰있기 떄문이다
+redirect를 할 수 없는 것이라는 거다 인제 에러 뜨게 했으면 이걸 캐치헤서 대응해야 되지 
+않겠는가? 이건 좀 있다 할 것이다 try, catch를 써서 해볼 것이다
+자 이런 실습을 통해 우리는 몽구스에게 최대한 데이터 타입, 즉 스키마를 구체적으로 작성할
+수록 더 편하다는 것을 알 수 있다 스키마는 구체적으로 만들어야 예외 상황에 대응하기 편하다
+예를 들어 required 같은 거는 왠만하면 넣어줘야 한다 자 앞으로 더 많은 에러를 일부러 만들어
+볼 것인데 우선 에러 발생시 아무것도 안하고 펜딩만 계속하고 있는 멍청한 브라우저에게 해당
+상황에 대처할 수 있게 해보겠다 try catch를 써보자 try catch를 써서 에러 발생시 콘솔창에
+에러 뜨게하고 upload 페이지를 다시 렌더하게끔 코드를 작성하자
+자 이렇게 하면 에러상황에도 무한 펜딩이 아니라 대처가 가능하게 됐다
+근데 에러 발생한걸 유저한테 알려주려면 아무래도 그냥 upload를 렌더하기 보단 에러 발생했다는
+메시지가 뜬 upload 페이지를 렌더하는게 더 좋을 것이다 그렇게 해보자
+에러 발생시 콘솔창에 뜨는 데이터들은 상당히 긴데 얘네도 결론적으로는 JSON문서이다 따라서
+오브젝트로 돼있다 이 오브젝트의 엘레먼트 중 _message 만 추출해서 upload 렌더시 변수로 보내
+보자 자 그리고 upload.pug 파일로 가서 만약(if) errorMessage 변수값 존재한다면
+errorMessage 값을 화면상에 출력하라는 코드를 넣어보자 if errorMessage   span=errorMessage
+이렇게 하면 된다 인제 한번 에러를 발생시켜보자
+타라~ 이렇게 하면 오류 발생시 에러 발생했다는 글귀가 포함된 upload 페이지를 렌더 할 수 있다
+
+{비디오 컨트롤러 중 postEdit 컨트롤러 중 일부러 createdAt 을 누락시킨 Video.create 부분
+과 try catch로 에러에 대응하는 부분}
+export const postUpload = async (req, res) => {
+  console.log(req.body);
+  const { title, description, hashtags } = req.body;
+  try {
+    await Video.create({
+      title,
+      description,
+      hashtags: hashtags.split(",").map((word) => `#${word}`),
+      meta: {
+        views: 0,
+        rating: 0,
+      },
+    });
+    return res.redirect("/");
+  } catch (error) {
+    console.log(error);
+    return res.render("upload", {
+      pageTitle: "Uploading Video",
+      errorMessage: error._message,
+    });
+  }
+};
+
+{if 문을 쓴 upload.pug 부분}
+extends base.pug
+
+block content 
+    if errorMessage 
+        span=errorMessage
+    form(method="POST")
+        input(placeholder="Title", required, type="text", name="title")
+        input(placeholder="Description", required, type="text", name="description")
+        input(placeholder="Hashtags, seperated by comma.", required, type="text", name="hashtags")
+        input(type="submit",value="Upload Video")
+
+인제 catch 구문에서 console.log(error) 는 필요없으므로 제거한다
+자 인제 이렇게 에러 캐치하는 것도 배웠는데 메번 실수할때마다 다시 입력하라 그러면 짜증나지 
+않겠는가? 스키마에서 디폴트 값을 넣어줘 보자
+createdAt 항목에 디폴트 값 넣을 건데 절대 default: Date.now() 이렇게 쓰면 안된다
+왜냐면 괄호를 쓰는 순간 이 함수를 바로 실행하겠다는 뜻이 되기 떄문 무조건 괄호를 빼고
+써야 한다 default: Date.now 이렇게 써야 한다
+이렇게 createdAt의 스키마에 디폴트 값을 주게 되면 우리는 추후 코드를 짜다가 도큐먼트를
+더 만들 일 이 생길때 Video.create 안에 지루하게 createdAt: Date.now() 를 작성하지 않아도
+된다 즉 그냥 디폴트 값 있는 createdAt은 생략한채로 도큐먼트를 생성해도 알아서 createdAt에
+Date가 들어가게 된다 meta 데이터들도 도큐먼트 만들때 매번 반복해서 쓰기 귀찮으므로
+스키마에 디폴트 값을 넣어주자
+자 이렇게 배우면 배울수록 코드가 점점 짧아지고 반복이 줄어들 것이다

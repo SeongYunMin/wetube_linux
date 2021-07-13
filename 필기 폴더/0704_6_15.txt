@@ -89,7 +89,7 @@ export const postUpload = async (req, res) => {
 그리고 mongo 콘솔에 가서 show dbs 치면 wetube 항목이 생겼음을 알 수 있다
 그리고 use wetube 를 치면 wetube db 안으로 들어갈 수 있고 거기서 show collections 를 치면
 wetube db 안에 생성한 콜렉션들을 볼 수 있다 콜렉션은 도큐먼트 들의 묶음이라고 생각하면 된다
-나는 예전에 videos 라는 모델(컬렉션)을 만들었고 현재는
+나는 예전에 videos 라는 모델(데이터가 없을땐 모델, 데이터 있으면 컬렉션)을 만들었고 현재는
 videomodels 사용하기 때문에 두개 다 콘솔 창에 뜬다 이렇게 mongo 콘솔을 사용할 수 있는데
 db.help() 쳐서 더 다양한 db 명령어를 확인할 수 있다
 방금까지 한 db에 저장하는 방법을 다시 요약하자면 video라는 JS 오브젝트를 만들고 그것을
