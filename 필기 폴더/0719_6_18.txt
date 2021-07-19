@@ -1,0 +1,75 @@
+{6_18_MoreSchema}
+몽구스 홈페이지에 가서 docs를 찾아보면 다양한 스키마 요소들을 볼 수 있다
+uppercase나 lowercase 같은 스키마 요소를 쓰면 어떤 string 값을 입력해도 모든 낱말을
+대문자 또는 소문자로 바꿔준다 title에 적용해보았다 Video.js의 스키마 파트에
+필요한 부분에 uppercase: true를 넣어줘서 이 속성을 먹일 수 있다 
+trim이라는 기능(함수이다)도 있는데 이는 string 앞 뒤에 만약 스페이스가 있을 경우 이를 없애주는
+역할을 한다 trim: true를 써서 적용할 수 있다 
+우리는 string을 받는 모든 부분에 trim: true 속성을 적용할 것이다
+자 이런 operation들은 스키마가 없었으면 수동적으로 적용해줘야 했는데 몽구스의 스키마 덕에
+자동으로 이러한 데이터에 대한 구체적인 설정을 할 수 있게 됐다
+좀 더 다양한 스키마 배워보자
+자주 쓰는거 중에 minLength와 maxLength가 있다 maxLength: 140 이렇게 설정하면 140이하 길이의
+데이터만 저장할 수 있게 되는 거다 이렇게 데이터의 크기도 스키마로 재단할 수 있다
+근데 스키마에서만 이렇게 string의 길이를 제한해두면 user가 form에 데이터를 실수로 더 길게
+입력하게 됐을때 에러가 발생할 수 있다 따라서 html 상에서도 길이 제한을 하도록 하자
+html의 어트리븉 중에도 minLength, maxLength가 존재한다 maxLength=40 이렇게 적용할 수 있다
+이렇게 하면 인제 길이 제한에 맞지 않는 데이터 입력될 시 에러가 발생하진 않고 브라우저에서
+글자수를 줄이거나 늘리라고 경고가 뜰 것이다
+근데 생각해보면 그렇다면 그냥 html 상에서만 글자 수 제한해두면 되지 굳이 데이터베이스의
+스키마까지 따로 설정을 해야되는가? 라는 의문이 들 것이다. 정답은 무조건 둘 다 해야한다는
+것이다 왜냐면 어떤 해커가 너의 웹사이트를 해킹할 경우 그 html코드를 지워버릴 수도 있기 때문이다
+즉 홈페이지를 보호하기 위해 둘 다 해야한다는 것이다
+hashtags: hashtags.split(",").map((word) => `#${word}`) 이 코드 또한 지금 보기에는
+완벽해보이지만 나중에 video edit을 할때 postEdit 컨트롤러에서 같은 코드를 또 반복해서
+써야하는 소요가 발생한다 따라서 이 부분도 추후에 수정할 것이다 나중에 좀 더 배우면
+hashtags: hashtags.split(",").map((word) => `#${word}`) 이렇게 쓰지 않고 그냥
+hashtags 만 써도 되게끔 코드를 간단하게 만들 수 있다
+
+{Video.js 중 스키마 부분}
+const videoSchema = new mongoose.Schema({
+  title: { type: String, uppercase: true, trim: true, maxLength: 80 },
+  description: { type: String, trim: true, minLength: 20 },
+  createdAt: { type: Date, required: true, default: Date.now },
+  hashtags: [{ type: String, trim: true }],
+  meta: {
+    views: { type: Number, required: true, default: 0 },
+    rating: { type: Number, required: true, default: 0 },
+  },
+});
+
+{upload.pug 중 form 부분}
+form(method="POST")
+        input(placeholder="Title", required, type="text", name="title", maxLength=80)
+        input(placeholder="Description", required, type="text", name="description", minLength=20)
+        input(placeholder="Hashtags, seperated by comma.", required, type="text", name="hashtags")
+        input(type="submit",value="Upload Video")
+
+{videoController.js 중 Video.create 부분}
+await Video.create({
+      title,
+      description,
+      hashtags: hashtags.split(",").map((word) => `#${word}`),
+    });
+
+자 인제 기존에 fake data 가지고 놀떄 쓰던 홈페이지 레이아웃을 지우자 mixin/video 로
+가서 기존의 ul 태그를 지우고 그자리에 real data에 입력된 값들을 넣어주자
+여기서 hr 태그는 위아래 간격을 띄우고 선을 집어넣는 역할을 한다
+자 이렇게 바꾸니까 훨씬 낫다
+
+{mixin/video.pug}
+mixin video(video)
+    div 
+        h4 
+            a(href=`/video/${video.id}`)=video.title
+        p=video.description 
+        small=video.createdAt 
+        hr
+
+여기서 a(href=`/video/${video.id}`)=video.title 이 html을 보면 홈페이지에서
+video.title 링크를 누르면 그 특정 id의 video 창으로 이동해야 하는데 클릭해보면
+cannot get "/video/d1dwds133213ed" 이렇게 뜬다 이건 좀 이상하다 왜냐하면
+우리는 watch라는 라우터를 통해 /video/id url에 대응할 수 있게 만들었기 때문이다
+이게 이렇게 에러가 난 이유는 우리가 videoRouter.get("/:id(\\d+)", watch);
+여기서 보면 알 수 있듯이 (\\d+) 이 정규식으로 인해 숫자로만 돼있는 id만 받도록
+코드를 짰기 때문에 에러가 난 것이다
